@@ -51,5 +51,10 @@ def analyze():
     label = response.choices[0].message.content.strip()
     return jsonify({"label": label})
 
+@app.route("/ping")
+def ping():
+    return "OK"
+
+
 if __name__ == "__main__":
     app.run(debug=True)
