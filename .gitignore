@@ -1,0 +1,9 @@
+# Bỏ file môi trường ảo
+.venv/
+
+# Bỏ file chứa key/API
+.env
+
+# Bỏ file cache Python
+__pycache__/.env
+.env

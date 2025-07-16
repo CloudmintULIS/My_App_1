@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Camera - This is a ...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h2>📷 AI Camera: This is a ...</h2>
+  <video id="webcam" autoplay muted playsinline></video>
+  <br>
+  <button id="capture-btn">📸 Chụp và nhận diện</button>
+  <div id="result">Đang tải mô hình...</div>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
