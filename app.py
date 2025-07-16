@@ -35,7 +35,7 @@ def analyze():
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": "Chỉ trả lời một câu đơn giản: This is a ..."},
+                    {"type": "text", "text": "Tôi đưa ra 1 hình ảnh rồi bạn phân tích nó là gì và chỉ trả lời một câu đơn giản: This is a ... , luôn có This is a/an trước vật thể đó"},
                     {
                         "type": "image_url",
                         "image_url": {
