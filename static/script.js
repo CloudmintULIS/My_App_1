@@ -27,7 +27,7 @@ button.addEventListener('click', () => {
     })
       .then(res => res.json())
       .then(data => {
-        resultDiv.innerText = '✅ This is a ' + data.label;
+        resultDiv.innerText = '✅ ' + data.label;
       })
       .catch(err => {
         resultDiv.innerText = '❌ Lỗi: ' + err.message;
