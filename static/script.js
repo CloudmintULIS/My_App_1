@@ -58,7 +58,13 @@ captureBtn.addEventListener('click', () => {
     })
       .then(res => res.json())
       .then(data => {
-        resultDiv.innerText = '✅ ' + data.label;
+        const label = data.label;
+        resultDiv.innerText = '✅ ' + label;
+
+        // Phát âm dòng chữ
+        const utterance = new SpeechSynthesisUtterance(label);
+        utterance.lang = 'en-US'; // hoặc 'vi-VN' nếu dùng tiếng Việt
+        speechSynthesis.speak(utterance);
       })
       .catch(err => {
         console.error('Fetch error:', err);
