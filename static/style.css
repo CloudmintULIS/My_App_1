@@ -39,3 +39,20 @@ video {
 canvas {
   display: none;
 }
+
+#switch-btn {
+  padding: 10px 20px;
+  background-color: #ffaa00;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-bottom: 10px;
+}
+
+#switch-btn:hover {
+  background-color: #ff9900;
+}
+
