@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Từ Vựng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee); /* pastel dễ thương */
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #4b3869;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        img {
+            max-width: 300px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .choices {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: #ff80ab;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 160px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #ff4081;
+            transform: translateY(-2px);
+        }
+
+        #result {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .nav-buttons {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .nav-buttons a {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 160px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-buttons .home-btn {
+            background-color: #8bc34a;
+            color: white;
+        }
+
+        .nav-buttons .home-btn:hover {
+            background-color: #689f38;
+        }
+
+        .nav-buttons .replay-btn {
+            background-color: #ffd54f;
+            color: black;
+        }
+
+        .nav-buttons .replay-btn:hover {
+            background-color: #fbc02d;
+        }
+
+        @media (max-width: 600px) {
+            button, .nav-buttons a {
+                width: 100%;
+            }
+
+            .choices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>🧠 Đây là gì?</h1>
+
+        {% if error_message %}
+            <p style="color: red; font-weight: bold; margin-bottom: 20px;">
+                {{ error_message }}
+            </p>
+            <div class="nav-buttons">
+                <a href="{{ url_for('review.review') }}" class="home-btn">📚 Ôn tập</a>
+            </div>
+        {% else %}
+            <img src="{{ image_path }}" alt="Quiz image"><br>
+
+            <div class="choices">
+                {% for choice in choices %}
+                    <button onclick="checkAnswer(this, '{{ choice }}')">{{ choice }}</button>
+                {% endfor %}
+            </div>
+
+            <p id="result"></p>
+
+            <div class="nav-buttons">
+                <a href="{{ url_for('review.review') }}" class="home-btn">📚 Ôn tập</a>
+                <a href="javascript:void(0)" class="replay-btn" onclick="loadNewQuiz()">🔁 Chơi lại</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        let correctAnswer = "{{ correct_word }}";  // giữ để kiểm tra
+
+        function checkAnswer(button, selected) {
+            const result = document.getElementById("result");
+            document.querySelectorAll(".choices button").forEach(btn => btn.disabled = true);
+
+            if (selected === correctAnswer) {
+                result.textContent = "✅ Chính xác!";
+                result.style.color = "green";
+                button.style.backgroundColor = "green";
+            } else {
+                result.textContent = "❌ Sai rồi!";
+                result.style.color = "red";
+                button.style.backgroundColor = "red";
+            }
+        }
+
+        async function loadNewQuiz() {
+            const response = await fetch("/quiz/api/new_quiz");
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            document.querySelector("img").src = data.image_url;
+
+            const choicesDiv = document.querySelector(".choices");
+            choicesDiv.innerHTML = "";
+
+            data.choices.forEach(choice => {
+                const btn = document.createElement("button");
+                btn.textContent = choice;
+                btn.onclick = () => checkAnswer(btn, choice);
+                choicesDiv.appendChild(btn);
+            });
+
+            correctAnswer = data.correct_word;
+            document.getElementById("result").textContent = "";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #fafafa;
+        }
+        h1 {
+            text-align: center;
+        }
+        .nav {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+        .nav a {
+            text-decoration: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th {
+            background: #f0f0f0;
+            padding: 10px;
+        }
+        td {
+            padding: 8px;
+            text-align: center;
+        }
+        img {
+            border-radius: 5px;
+        }
+        form {
+            margin-bottom: 15px;
+        }
+        input, select, button {
+            padding: 6px;
+            margin-right: 5px;
+        }
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+        a.delete-btn {
+            color: red;
+            text-decoration: none;
+        }
+        a.edit-btn {
+            color: blue;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="{{ url_for('main.index') }}">🏠 Về trang chính</a>
+    </div>
+
+    <h1>📊 Admin Dashboard</h1>
+
+    <h2>👤 Quản lý Users</h2>
+    <form method="POST" action="{{ url_for('admin.add_user') }}">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="text" name="password" placeholder="Password" required>
+        <select name="role">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+        </select>
+        <button type="submit">➕ Thêm User</button>
+    </form>
+
+    <table>
+        <tr><th>STT</th><th>ID</th><th>Username</th><th>Role</th><th>Hành động</th></tr>
+        {% for u in users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.role }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="edit-btn">✏ Sửa</a> |
+                <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="delete-btn">🗑 Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>📚 Dữ liệu vocab_cards</h2>
+    <table>
+        <tr>
+            <th>STT</th><th>ID</th><th>User</th><th>Word</th><th>Image</th><th>Time</th><th>Hành động</th>
+        </tr>
+        {% for card in vocab_cards %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ card.id }}</td>
+            <td>{{ card.username }}</td>
+            <td>{{ card.word }}</td>
+            <td><a href="{{ card.image_path }}" target="_blank">{{ card.image_path }}</a></td>
+            <td>{{ card.timestamp }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_vocab', vocab_id=card.id) }}">✏ Sửa</a> |
+                <a href="{{ url_for('admin.delete_vocab', vocab_id=card.id) }}" class="delete-btn">🗑 Xóa</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

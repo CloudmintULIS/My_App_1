@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ôn tập từ vựng</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fdf6e3;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .flashcard-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 40px;
+            cursor: pointer;
+            color: #4CAF50;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.2);
+            color: #388e3c;
+        }
+
+        .notebook {
+            background: #fffdf5;
+            border: 2px dashed #bbb;
+            border-radius: 25px;
+            padding: 25px;
+            width: 360px;
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .notebook::before {
+            content: "";
+            position: absolute;
+            left: -12px;
+            top: 20px;
+            width: 10px;
+            height: calc(100% - 40px);
+            background: repeating-linear-gradient(
+                #ccc,
+                #ccc 4px,
+                transparent 4px,
+                transparent 8px
+            );
+        }
+
+        .flashcard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.4s ease;
+        }
+
+        .flashcard img {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin: auto;
+        }
+
+        .word {
+            margin-top: 15px;
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        .back-btn, .quiz-btn {
+            display: inline-block;
+            text-align: center;
+            min-width: 160px; /* hoặc 180px tuỳ ý */
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .button-group a {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .back-btn {
+            background-color: #81c784;
+            color: white;
+        }
+        .back-btn:hover {
+            background-color: #66bb6a;
+        }
+        .quiz-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+        .quiz-btn:hover {
+            background-color: #e68900;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>📖 Quyển vở từ vựng của bạn</h1>
+
+{% if cards %}
+    <div class="flashcard-container">
+        <button class="nav-btn" onclick="prevCard()">&#8592;</button>
+
+        <div class="notebook">
+            <div class="flashcard" id="flashcard">
+                <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
+                <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
+            </div>
+        </div>
+
+        <button class="nav-btn" onclick="nextCard()">&#8594;</button>
+    </div>
+<div class="button-group">
+    <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
+    <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
+</div>
+{% else %}
+    <p style="text-align: center; font-size: 18px; margin-top: 30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
+    <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
+{% endif %}
+
+<script>
+    const cards = {{ cards|tojson }};
+    let currentIndex = 0;
+
+    const flashcardImg = document.getElementById("flashcard-img");
+    const flashcardWord = document.getElementById("flashcard-word");
+    const flashcardDiv = document.getElementById("flashcard");
+
+    function showCard(index) {
+        flashcardDiv.style.opacity = 0;
+        setTimeout(() => {
+            flashcardImg.src = cards[index].image_path;
+            flashcardWord.textContent = cards[index].word;
+            flashcardDiv.style.opacity = 1;
+        }, 200);
+    }
+
+    function nextCard() {
+        currentIndex = (currentIndex + 1) % cards.length;
+        showCard(currentIndex);
+    }
+
+    function prevCard() {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        showCard(currentIndex);
+    }
+
+    // 👇 THÊM PHẦN DƯỚI ĐÂY CHO KÉO THẢ
+    let startX = 0;
+    let isDragging = false;
+
+    // Mobile (touch)
+    flashcardDiv.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+    });
+
+    flashcardDiv.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        const currentX = e.touches[0].clientX;
+        const deltaX = currentX - startX;
+
+        // Vuốt đủ mạnh (trên 80px) mới chuyển card
+        if (deltaX > 80) {
+            prevCard();
+            isDragging = false;
+        } else if (deltaX < -80) {
+            nextCard();
+            isDragging = false;
+        }
+    });
+
+    flashcardDiv.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+
+    // Desktop (mouse)
+    flashcardDiv.addEventListener('mousedown', e => {
+        startX = e.clientX;
+        isDragging = true;
+    });
+
+    flashcardDiv.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - startX;
+
+        if (deltaX > 80) {
+            prevCard();
+            isDragging = false;
+        } else if (deltaX < -80) {
+            nextCard();
+            isDragging = false;
+        }
+    });
+
+    flashcardDiv.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Tránh kéo khi ra khỏi flashcard
+    flashcardDiv.addEventListener('mouseleave', () => {
+        isDragging = false;
+    });
+</script>
+
+
+</body>
+</html>

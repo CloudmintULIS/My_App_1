@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Vocab Card</title>
+</head>
+<body>
+    <h1>✏ Sửa Vocab Card</h1>
+    <form method="POST">
+        <label>Word:</label><br>
+        <input type="text" name="word" value="{{ vocab.word }}" required><br><br>
+
+        <label>Image Path:</label><br>
+        <input type="text" name="image_path" value="{{ vocab.image_path }}" required><br><br>
+
+        <button type="submit">💾 Lưu thay đổi</button>
+    </form>
+    <br>
+    <a href="{{ url_for('admin.dashboard') }}">⬅ Quay lại Admin</a>
+</body>
+</html>

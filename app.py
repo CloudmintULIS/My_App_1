@@ -1,60 +1,34 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask
+from controllers.auth_controller import auth_bp
+from controllers.main_controller import main_bp
+from controllers.review_controller import review_bp
+from controllers.quiz_controller import quiz_bp
+from controllers.openAI_controller import openAI_bp
+from controllers.admin_controller import admin_bp
+from controllers.image_controller import image_bp
+import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from PIL import Image
-import os
-import base64
-from io import BytesIO
 
-# Load API key từ .env
+# Load biến môi trường (API key)
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='view')
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
-# Route hiển thị giao diện
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-# Route xử lý ảnh
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    image_file = request.files["image"]
-    image = Image.open(image_file.stream).convert("RGB")
-
-    # Chuyển ảnh sang base64
-    buffered = BytesIO()
-    image.save(buffered, format="JPEG")
-    b64_image = base64.b64encode(buffered.getvalue()).decode()
-
-    # Gửi lên GPT-4o
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": "Tôi đưa ra 1 hình ảnh rồi bạn phân tích nó là gì và chỉ trả lời một câu đơn giản: This is a ... , luôn có This is a/an trước vật thể đó"},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{b64_image}",
-                            "detail": "low"  # tiết kiệm token
-                        },
-                    },
-                ],
-            }
-        ],
-    )
-
-    label = response.choices[0].message.content.strip()
-    return jsonify({"label": label})
+# Đăng ký các blueprint
+app.register_blueprint(auth_bp)
+app.register_blueprint(review_bp)
+app.register_blueprint(quiz_bp)
+app.register_blueprint(openAI_bp)
+app.register_blueprint(admin_bp)
+app.register_blueprint(main_bp)
+app.register_blueprint(image_bp)
 
 @app.route("/ping")
 def ping():
     return "OK"
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

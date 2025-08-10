@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🌸 AI Camera - English With Me 🌸</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <!-- Thanh người dùng -->
+  <div class="user-bar">
+    👤 Welcome, <strong>{{ username }}</strong>!
+    <a href="{{ url_for('auth.logout') }}" class="logout-btn">🚪 Logout</a>
+  </div>
+
+  <h2 class="title">📷 English with me 💖</h2>
+
+  <!-- Khung video -->
+  <div class="video-container">
+    <video id="webcam" autoplay muted playsinline></video>
+  </div>
+
+  <!-- Kết quả nhận diện -->
+  <div id="result" class="result-box">Hãy chụp ảnh để nhận diện 📸</div>
+
+  <!-- Nút chức năng -->
+  <div class="button-container">
+    <button id="switch-btn" class="btn btn-switch">🔄 Chuyển camera</button>
+    <button id="capture-btn" class="btn btn-capture">📸 Chụp & Nhận diện</button>
+    <a href="{{ url_for('review.review') }}" class="btn btn-review">📚 Ôn tập</a>
+  </div>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
