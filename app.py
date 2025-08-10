@@ -15,7 +15,7 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app = Flask(__name__, template_folder='view')
-app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.secret_key = os.getenv("SECRET_KEY", "my-secret-key")
 
 # Đăng ký các blueprint
 app.register_blueprint(auth_bp)
