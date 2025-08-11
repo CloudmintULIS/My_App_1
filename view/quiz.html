@@ -24,11 +24,17 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            display: inline-block;
+            display: block; /* để chiếm toàn bộ width trên mobile */
+            max-width: 500px; /* giới hạn chiều rộng tối đa trên desktop */
+            margin: auto;
+            width: 100%; /* cho mobile full width */
         }
 
         img {
-            max-width: 300px;
+            width: auto;
+            max-width: 300px; /* cố định chiều rộng tối đa */
+            height: auto;
+            max-height: 300px; /* cố định chiều cao tối đa */
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -103,15 +109,34 @@
             background-color: #fbc02d;
         }
 
-        @media (max-width: 600px) {
-            button, .nav-buttons a {
-                width: 100%;
-            }
-
-            .choices {
-                grid-template-columns: 1fr;
-            }
+        /* Responsive mobile */
+    @media (max-width: 600px) {
+        body {
+            padding: 15px;
         }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        .quiz-container {
+            padding: 20px;
+        }
+
+        .choices {
+            grid-template-columns: 1fr;
+        }
+
+        button, .nav-buttons a {
+            width: 100%;
+            font-size: 14px;
+            padding: 10px;
+        }
+        img {66666666666666666666666666666
+            max-width: 250px; /* nhỏ hơn trên điện thoại */
+            max-height: 250px;
+        }
+    }
     </style>
 </head>
 <body>

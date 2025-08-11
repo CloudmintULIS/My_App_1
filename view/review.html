@@ -127,6 +127,39 @@
             background-color: #e68900;
         }
 
+    /* Cho mobile: màn hình dưới 600px */
+    @media (max-width: 600px) {
+        body {
+            padding: 20px;
+        }
+
+        .notebook {
+            width: 100%;
+            max-width: 95vw;
+            padding: 15px;
+        }
+
+        .flashcard img {
+            max-height: 40vh; /* Chiều cao linh hoạt hơn */
+        }
+
+        .word {
+            font-size: 1.2em;
+        }
+
+        .nav-btn {
+            font-size: 30px;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .button-group a {
+            width: 100%;
+        }
+    }
+
     </style>
 </head>
 <body>
