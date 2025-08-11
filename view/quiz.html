@@ -2,13 +2,14 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Từ Vựng</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
             text-align: center;
-            background: linear-gradient(to right, #fbc2eb, #a6c1ee); /* pastel dễ thương */
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
             padding: 30px;
             min-height: 100vh;
         }
@@ -24,17 +25,16 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            display: block; /* để chiếm toàn bộ width trên mobile */
-            max-width: 500px; /* giới hạn chiều rộng tối đa trên desktop */
+            max-width: 500px;
             margin: auto;
-            width: 100%; /* cho mobile full width */
+            width: 100%;
         }
 
         img {
             width: auto;
-            max-width: 300px; /* cố định chiều rộng tối đa */
+            max-width: 300px;
             height: auto;
-            max-height: 300px; /* cố định chiều cao tối đa */
+            max-height: 300px;
             border-radius: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -74,6 +74,7 @@
         .nav-buttons {
             margin-top: 40px;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
         }
@@ -110,51 +111,40 @@
         }
 
         /* Responsive mobile */
-    @media (max-width: 600px) {
-        body {
-            padding: 15px;
-        }
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
 
-        h1 {
-            font-size: 24px;
-        }
+            h1 {
+                font-size: 24px;
+            }
 
-        .quiz-container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            max-width: 800px; /* rộng hơn để không bị co */
-            margin: auto;
-            width: 100%;
-        }
+            .quiz-container {
+                padding: 20px;
+                max-width: 100%;
+            }
 
-        .quiz-container img {
-            display: block;
-            margin: 0 auto;
-            max-width: 350px; /* giới hạn ngang */
-            max-height: 300px; /* giới hạn dọc */
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
+            .quiz-container img {
+                display: block;
+                margin: 0 auto;
+                max-width: 90%;
+                max-height: 70vh;
+                width: auto;
+                height: auto;
+                object-fit: contain;
+            }
 
-        .choices {
-            grid-template-columns: 1fr;
-        }
+            .choices {
+                grid-template-columns: 1fr;
+            }
 
-        button, .nav-buttons a {
-            width: 100%;
-            font-size: 14px;
-            padding: 10px;
+            button, .nav-buttons a {
+                width: 100%;
+                font-size: 14px;
+                padding: 10px;
+            }
         }
-        img {66666666666666666666666666666
-            max-width: 250px; /* nhỏ hơn trên điện thoại */
-            max-height: 250px;
-        }
-    }
     </style>
 </head>
 <body>
@@ -187,7 +177,7 @@
     </div>
 
     <script>
-        let correctAnswer = "{{ correct_word }}";  // giữ để kiểm tra
+        let correctAnswer = "{{ correct_word }}";
 
         function checkAnswer(button, selected) {
             const result = document.getElementById("result");

@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Thêm meta viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ôn tập từ vựng</title>
     <style>
         body {
@@ -17,6 +19,7 @@
         h1 {
             margin-bottom: 30px;
             color: #333;
+            text-align: center;
         }
 
         .flashcard-container {
@@ -87,15 +90,17 @@
             color: #333;
             text-align: center;
         }
+
         .back-btn, .quiz-btn {
             display: inline-block;
             text-align: center;
-            min-width: 160px; /* hoặc 180px tuỳ ý */
+            min-width: 160px;
             padding: 10px 20px;
             border-radius: 8px;
             font-size: 16px;
             transition: background-color 0.3s ease;
         }
+
         .button-group {
             display: flex;
             gap: 10px;
@@ -112,66 +117,62 @@
             font-size: 16px;
             text-decoration: none;
         }
+
         .back-btn {
             background-color: #81c784;
             color: white;
         }
+
         .back-btn:hover {
             background-color: #66bb6a;
         }
+
         .quiz-btn {
             background-color: #ff9800;
             color: white;
         }
+
         .quiz-btn:hover {
             background-color: #e68900;
         }
 
-    /* Cho mobile: màn hình dưới 600px */
-    @media (max-width: 600px) {
-        body {
-            padding: 20px;
-        }
+        /* Mobile */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
 
-        .notebook {
-            background: #fffdf5;
-            border: 2px dashed #bbb;
-            border-radius: 25px;
-            padding: 25px;
-            width: 100%;             /* chiếm hết chiều ngang */
-            max-width: 800px;        /* giới hạn tối đa trên màn hình lớn */
-            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
-            position: relative;
-            margin: 0 auto;          /* căn giữa */
-        }
-        .flashcard img {
-            display: block;
-            margin: 0 auto;
-            max-width: 350px;        /* giới hạn chiều ngang ảnh */
-            max-height: 300px;       /* giới hạn chiều cao ảnh */
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            border-radius: 10px;
-        }
+            .notebook {
+                width: 100%;
+                max-width: 100%;
+                padding: 15px;
+                margin: 0 auto;
+            }
 
-        .word {
-            font-size: 1.2em;
-        }
+            .flashcard img {
+                width: 100%;
+                max-width: 100%;
+                max-height: 70vh; /* 70% chiều cao màn hình */
+                height: auto;
+                object-fit: contain;
+            }
 
-        .nav-btn {
-            font-size: 30px;
-        }
+            .word {
+                font-size: 1.4em;
+            }
 
-        .button-group {
-            flex-direction: column;
-        }
+            .nav-btn {
+                font-size: 30px;
+            }
 
-        .button-group a {
-            width: 100%;
-        }
-    }
+            .button-group {
+                flex-direction: column;
+            }
 
+            .button-group a {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -191,10 +192,10 @@
 
         <button class="nav-btn" onclick="nextCard()">&#8594;</button>
     </div>
-<div class="button-group">
-    <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
-    <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
-</div>
+    <div class="button-group">
+        <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
+        <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
+    </div>
 {% else %}
     <p style="text-align: center; font-size: 18px; margin-top: 30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
     <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
@@ -227,11 +228,10 @@
         showCard(currentIndex);
     }
 
-    // 👇 THÊM PHẦN DƯỚI ĐÂY CHO KÉO THẢ
+    // Swipe mobile
     let startX = 0;
     let isDragging = false;
 
-    // Mobile (touch)
     flashcardDiv.addEventListener('touchstart', e => {
         startX = e.touches[0].clientX;
         isDragging = true;
@@ -242,7 +242,6 @@
         const currentX = e.touches[0].clientX;
         const deltaX = currentX - startX;
 
-        // Vuốt đủ mạnh (trên 80px) mới chuyển card
         if (deltaX > 80) {
             prevCard();
             isDragging = false;
@@ -256,7 +255,7 @@
         isDragging = false;
     });
 
-    // Desktop (mouse)
+    // Drag desktop
     flashcardDiv.addEventListener('mousedown', e => {
         startX = e.clientX;
         isDragging = true;
@@ -279,12 +278,10 @@
         isDragging = false;
     });
 
-    // Tránh kéo khi ra khỏi flashcard
     flashcardDiv.addEventListener('mouseleave', () => {
         isDragging = false;
     });
 </script>
-
 
 </body>
 </html>
