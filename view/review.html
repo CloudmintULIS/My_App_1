@@ -134,13 +134,25 @@
         }
 
         .notebook {
-            width: 100%;
-            max-width: 95vw;
-            padding: 15px;
+            background: #fffdf5;
+            border: 2px dashed #bbb;
+            border-radius: 25px;
+            padding: 25px;
+            width: 100%;             /* chiếm hết chiều ngang */
+            max-width: 800px;        /* giới hạn tối đa trên màn hình lớn */
+            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            margin: 0 auto;          /* căn giữa */
         }
-
         .flashcard img {
-            max-height: 40vh; /* Chiều cao linh hoạt hơn */
+            display: block;
+            margin: 0 auto;
+            max-width: 350px;        /* giới hạn chiều ngang ảnh */
+            max-height: 300px;       /* giới hạn chiều cao ảnh */
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 10px;
         }
 
         .word {
