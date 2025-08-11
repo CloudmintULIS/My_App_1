@@ -118,7 +118,7 @@
 </head>
 <body>
     <div class="login-container">
-        <h2>Welcome Back</h2>
+        <h2>🌸 Rất vui được gặp lại bạn 🌸</h2>
 
         {% with messages = get_flashed_messages() %}
           {% if messages %}
@@ -131,8 +131,8 @@
         {% endwith %}
 
         <form method="post">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
             <button type="submit">Login</button>
         </form>
         <p>Bạn chưa có tài khoản? <a href="{{ url_for('auth.register') }}">Đăng Ký</a></p>

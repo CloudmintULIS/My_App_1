@@ -15,7 +15,7 @@ async function startCamera(facingMode = 'environment') {
 
   try {
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facingMode } },  // Ưu tiên dùng loại camera mong muốn
+      video: { facingMode: { ideal: facingMode } },
       audio: false
     });
     video.srcObject = stream;
@@ -61,10 +61,16 @@ captureBtn.addEventListener('click', () => {
         const label = data.label;
         resultDiv.innerText = '✅ ' + label;
 
-        // Phát âm dòng chữ
-        const utterance = new SpeechSynthesisUtterance(label);
-        utterance.lang = 'en-US'; // hoặc 'vi-VN' nếu dùng tiếng Việt
-        speechSynthesis.speak(utterance);
+        // Kiểm tra hỗ trợ Speech Synthesis
+        if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+          const utterance = new SpeechSynthesisUtterance(label);
+          utterance.lang = 'en-US'; // hoặc 'vi-VN'
+          speechSynthesis.speak(utterance);
+        } else {
+          console.warn("❌ Text-to-Speech không được hỗ trợ trên trình duyệt này.");
+          // Nếu muốn báo trên giao diện:
+          // resultDiv.innerText += " (TTS không được hỗ trợ)";
+        }
       })
       .catch(err => {
         console.error('Fetch error:', err);
