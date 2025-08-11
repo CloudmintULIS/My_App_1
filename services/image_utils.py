@@ -17,6 +17,13 @@ cloudinary.config(
     secure=True
 )
 
+def async_upload(username, image, label_clean):
+    """Hàm chạy background để upload ảnh"""
+    try:
+        upload_image_and_save(username, image, label_clean)
+    except Exception as e:
+        print(f"[ERROR] Upload failed: {e}")
+
 def upload_image_and_save(username: str, image: Image.Image, label_clean: str) -> (bool, str, str):
     """
     Upload ảnh PIL lên Cloudinary, lưu URL vào DB.

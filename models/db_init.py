@@ -2,8 +2,6 @@ import psycopg2
 import os
 from urllib.parse import urlparse
 
-print(os.getenv('DATABASE_URL'))
-
 def get_db_connection():
     DATABASE_URL = os.getenv('DATABASE_URL')
     if not DATABASE_URL:
@@ -11,7 +9,7 @@ def get_db_connection():
 
     result = urlparse(DATABASE_URL)
     conn = psycopg2.connect(
-        dbname=result.path[1:],  # bỏ dấu '/'
+        dbname=result.path[1:],
         user=result.username,
         password=result.password,
         host=result.hostname,
@@ -19,12 +17,11 @@ def get_db_connection():
     )
     return conn
 
-
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Tạo bảng users
+    # Bảng users
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -34,27 +31,38 @@ def init_db():
         )
     ''')
 
-    # Tạo bảng vocab_cards
+    # Bảng vocab_cards với ON DELETE CASCADE
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS vocab_cards (
             id SERIAL PRIMARY KEY,
-            user_id INTEGER REFERENCES users(id),
+            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
             image_path TEXT NOT NULL,
             word TEXT NOT NULL,
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    cursor.execute(
-        "UPDATE users SET role = %s WHERE username = %s",
-        ('admin', 'lecuong')
-    )
+    # Nếu bảng đã tồn tại nhưng không có ON DELETE CASCADE thì chỉnh lại constraint
+    cursor.execute("""
+        SELECT conname
+        FROM pg_constraint
+        WHERE conrelid = 'vocab_cards'::regclass
+          AND contype = 'f'
+    """)
+    fk_constraints = cursor.fetchall()
+    if fk_constraints:
+        fk_name = fk_constraints[0][0]
+        cursor.execute(f'ALTER TABLE vocab_cards DROP CONSTRAINT {fk_name}')
+        cursor.execute('''
+            ALTER TABLE vocab_cards
+            ADD CONSTRAINT vocab_cards_user_id_fkey
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ''')
 
     conn.commit()
     cursor.close()
     conn.close()
     print("✅ Database initialized successfully.")
-
 
 if __name__ == '__main__':
     init_db()
