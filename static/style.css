@@ -54,6 +54,7 @@ body {
   justify-content: center;
   margin-top: 12px;
   width: 100%;
+  height: auto;
 }
 
 video {
@@ -122,6 +123,10 @@ video {
 
 /* Mobile tối ưu */
 @media (max-width: 600px) {
+  body {
+    padding-bottom: 10px;
+  }
+
   .title {
     font-size: 1.4em;
     margin-top: 70px;
@@ -138,9 +143,21 @@ video {
     padding: 10px 12px;
   }
 
+  /* Camera full màn hơn */
+  .video-container {
+    height: 70vh; /* Chiếm 70% chiều cao màn hình */
+    margin-top: 5px;
+  }
+
   video {
-    width: 95%;
+    width: 100%;
+    height: 100%;
     max-width: none;
+    max-height: none;
+    aspect-ratio: auto; /* Bỏ tỉ lệ cố định */
+    object-fit: cover; /* Có thể đổi thành contain nếu muốn thấy toàn bộ */
+    border-radius: 8px;
+    border: 2px solid #ffb6c1;
   }
 
   .user-bar {
