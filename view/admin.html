@@ -1,128 +1,384 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #fafafa;
-        }
-        h1 {
-            text-align: center;
-        }
-        .nav {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-        .nav a {
-            text-decoration: none;
-            background-color: #4CAF50;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            margin-left: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th {
-            background: #f0f0f0;
-            padding: 10px;
-        }
-        td {
-            padding: 8px;
-            text-align: center;
-        }
-        img {
-            border-radius: 5px;
-        }
-        form {
-            margin-bottom: 15px;
-        }
-        input, select, button {
-            padding: 6px;
-            margin-right: 5px;
-        }
-        button {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0b7dda;
-        }
-        a.delete-btn {
-            color: red;
-            text-decoration: none;
-        }
-        a.edit-btn {
-            color: blue;
-            text-decoration: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #2c3e50;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 20px;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover {
+      background: #34495e;
+    }
+
+    /* Main content */
+    .main {
+      margin-left: 220px;
+      padding: 20px;
+      width: 100%;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    /* Forms */
+    form {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding: 8px;
+      margin: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 10px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    th {
+      background: #f8f9fa;
+    }
+    tr:hover {
+      background: #f2f6fc;
+    }
+
+    /* Action links */
+    a.delete-btn {
+      color: red;
+      text-decoration: none;
+    }
+    a.edit-btn {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    /* Pagination */
+    .pagination {
+      margin: 15px 0;
+      text-align: center;
+    }
+    .pagination button {
+      margin: 0 3px;
+      padding: 6px 12px;
+      border: none;
+      background: #ecf0f1;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .pagination button:hover {
+      background: #dcdde1;
+    }
+    .pagination button:disabled {
+      background: #bdc3c7;
+      cursor: not-allowed;
+    }
+    .pagination button.active {
+      background: #3498db;
+      color: white;
+    }
+
+    /* Show all button */
+    .show-all-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .show-all-container button {
+      background: #27ae60;
+      color: white;
+    }
+    .show-all-container button:hover {
+      background: #219150;
+    }
+  </style>
 </head>
 <body>
-    <div class="nav">
-        <a href="{{ url_for('main.index') }}">🏠 Về trang chính</a>
-    </div>
 
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>⚙️ Admin</h2>
+    <a href="{{ url_for('main.index') }}">🏠 Trang chính</a>
+    <a href="#stats">📊 Xem thống kê</a>
+    <a href="#users">👤 Quản lý users</a>
+    <a href="#vocab">📚 Quản lý vocabs </a>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
     <h1>📊 Admin Dashboard</h1>
 
-    <h2>👤 Quản lý Users</h2>
+    <!-- Bảng thống kê -->
+    <h3 id="stats">📊 Thống kê số lượng từ của mỗi user</h3>
+    <table>
+      <tr>
+        <th>Username</th>
+        <th>Số lượng vocab</th>
+      </tr>
+      {% for stat in user_stats %}
+      <tr>
+        <td>{{ stat.username }}</td>
+        <td>{{ stat.vocab_count }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <!-- Biểu đồ -->
+    <div style="max-width: 800px; margin: 20px auto;">
+      <h3>📊 Biểu đồ cột</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+
+    <div style="max-width: 500px; margin: 20px auto;">
+      <h3>🥧 Biểu đồ tròn</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const labels = {{ user_stats | map(attribute='username') | list | tojson }};
+      const dataValues = {{ user_stats | map(attribute='vocab_count') | list | tojson }};
+
+      // Biểu đồ cột
+      new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Số lượng từ',
+            data: dataValues,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      // Biểu đồ tròn
+      new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)',
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(153, 102, 255, 0.6)',
+              'rgba(255, 159, 64, 0.6)'
+            ],
+            borderColor: 'white',
+            borderWidth: 2
+          }]
+        }
+      });
+    </script>
+
+    <!-- Users section -->
+    <h2 id="users">👤 Quản lý Users</h2>
     <form method="POST" action="{{ url_for('admin.add_user') }}">
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="text" name="password" placeholder="Password" required>
-        <select name="role">
-            <option value="user">user</option>
-            <option value="admin">admin</option>
-        </select>
-        <button type="submit">➕ Thêm User</button>
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="text" name="password" placeholder="Password" required>
+      <select name="role">
+        <option value="user">user</option>
+        <option value="admin">admin</option>
+      </select>
+      <button type="submit">➕ Thêm User</button>
     </form>
-
-    <table>
-        <tr><th>STT</th><th>ID</th><th>Username</th><th>Role</th><th>Hành động</th></tr>
-        {% for u in users %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ u.id }}</td>
-            <td>{{ u.username }}</td>
-            <td>{{ u.role }}</td>
-            <td>
-                <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="edit-btn">✏ Sửa</a> |
-                <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="delete-btn">🗑 Xóa</a>
-            </td>
-        </tr>
-        {% endfor %}
+    <table id="usersTable">
+      <tr>
+        <th>STT</th>
+        <th>ID</th>
+        <th>Username</th>
+<!--        <th>Password</th>-->
+        <th>Role</th>
+        <th>Hành động</th></tr>
+      {% for u in users %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+<!--        <td>{{ u.password }}</td>-->
+        <td>{{ u.role }}</td>
+        <td>
+          <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="edit-btn">✏ Sửa</a> |
+          <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="delete-btn">🗑 Xóa</a>
+        </td>
+      </tr>
+      {% endfor %}
     </table>
+    <div id="usersPagination" class="pagination"></div>
+    <div class="show-all-container">
+      <button id="usersShowAll">👀 Xem tất cả</button>
+    </div>
 
-    <h2>📚 Dữ liệu vocab_cards</h2>
-    <table>
-        <tr>
-            <th>STT</th><th>ID</th><th>User</th><th>Word</th><th>Image</th><th>Time</th><th>Hành động</th>
-        </tr>
-        {% for card in vocab_cards %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ card.id }}</td>
-            <td>{{ card.username }}</td>
-            <td>{{ card.word }}</td>
-            <td><a href="{{ card.image_path }}" target="_blank">{{ card.image_path }}</a></td>
-            <td>{{ card.timestamp }}</td>
-            <td>
-                <a href="{{ url_for('admin.edit_vocab', vocab_id=card.id) }}">✏ Sửa</a> |
-                <a href="{{ url_for('admin.delete_vocab', vocab_id=card.id) }}" class="delete-btn">🗑 Xóa</a>
-            </td>
-        </tr>
-        {% endfor %}
+    <!-- Vocab section -->
+    <h2 id="vocab">📚 Dữ liệu vocab_cards</h2>
+    <table id="vocabTable">
+      <tr>
+        <th>STT</th><th>ID</th><th>User</th><th>Word</th><th>Image</th><th>Time</th><th>Hành động</th>
+      </tr>
+      {% for card in vocab_cards %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ card.id }}</td>
+        <td>{{ card.username }}</td>
+        <td>{{ card.word }}</td>
+        <td><a href="{{ card.image_path }}" target="_blank">Xem ảnh</a></td>
+        <td>{{ card.timestamp }}</td>
+        <td>
+          <a href="{{ url_for('admin.edit_vocab', vocab_id=card.id) }}" class="edit-btn">✏ Sửa</a> |
+          <a href="{{ url_for('admin.delete_vocab', vocab_id=card.id) }}" class="delete-btn">🗑 Xóa</a>
+        </td>
+      </tr>
+      {% endfor %}
     </table>
+    <div id="vocabPagination" class="pagination"></div>
+    <div class="show-all-container">
+      <button id="vocabShowAll">👀 Xem tất cả</button>
+    </div>
+  </div>
+
+  <!-- JS phân trang -->
+  <script>
+  function paginateTable(tableId, paginationId, showAllBtnId, rowsPerPage = 10) {
+    const table = document.getElementById(tableId);
+    const pagination = document.getElementById(paginationId);
+    const showAllBtn = document.getElementById(showAllBtnId);
+    const rows = table.getElementsByTagName("tr");
+    const rowCount = rows.length - 1; // bỏ dòng tiêu đề
+    const pageCount = Math.ceil(rowCount / rowsPerPage);
+    let currentPage = 1;
+    let isShowAll = false;
+
+    function showPage(page) {
+      currentPage = page;
+      const start = (page - 1) * rowsPerPage + 1;
+      const end = start + rowsPerPage - 1;
+
+      for (let i = 1; i < rows.length; i++) {
+        rows[i].style.display = "none";
+      }
+      for (let i = start; i <= end && i < rows.length; i++) {
+        rows[i].style.display = "";
+      }
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      pagination.innerHTML = "";
+
+      const prev = document.createElement("button");
+      prev.textContent = "⬅ Trước";
+      prev.disabled = currentPage === 1;
+      prev.onclick = () => showPage(currentPage - 1);
+      pagination.appendChild(prev);
+
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = (i === currentPage) ? "active" : "";
+        btn.onclick = () => showPage(i);
+        pagination.appendChild(btn);
+      }
+
+      const next = document.createElement("button");
+      next.textContent = "Tiếp ➡";
+      next.disabled = currentPage === pageCount;
+      next.onclick = () => showPage(currentPage + 1);
+      pagination.appendChild(next);
+    }
+
+    function showAll() {
+      for (let i = 1; i < rows.length; i++) {
+        rows[i].style.display = "";
+      }
+      pagination.style.display = "none";
+      showAllBtn.textContent = "↩ Quay lại phân trang";
+      isShowAll = true;
+    }
+
+    function backToPagination() {
+      pagination.style.display = "block";
+      showPage(1);
+      showAllBtn.textContent = "👀 Xem tất cả";
+      isShowAll = false;
+    }
+
+    showAllBtn.onclick = () => {
+      if (isShowAll) {
+        backToPagination();
+      } else {
+        showAll();
+      }
+    };
+
+    if (pageCount > 1) {
+      showPage(1);
+    }
+  }
+
+  // Gọi phân trang cho cả 2 bảng
+  paginateTable("usersTable", "usersPagination", "usersShowAll", 5);
+  paginateTable("vocabTable", "vocabPagination", "vocabShowAll", 5);
+  </script>
 
 </body>
 </html>
