@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Thêm meta viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ôn tập từ vựng</title>
     <style>
@@ -91,38 +90,32 @@
             text-align: center;
         }
 
-        .back-btn, .quiz-btn {
-            display: inline-block;
-            text-align: center;
-            min-width: 160px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
         .button-group {
             display: flex;
             gap: 10px;
-            margin-top: 30px;
+            margin-top: 20px;
             width: 100%;
             max-width: 400px;
         }
 
-        .button-group a {
+        .button-group a,
+        .button-group button {
             flex: 1;
             text-align: center;
             padding: 10px 0;
             border-radius: 8px;
             font-size: 16px;
             text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
+        /* Giữ nguyên 2 nút a */
         .back-btn {
             background-color: #81c784;
             color: white;
         }
-
         .back-btn:hover {
             background-color: #66bb6a;
         }
@@ -131,55 +124,37 @@
             background-color: #ff9800;
             color: white;
         }
-
         .quiz-btn:hover {
             background-color: #e68900;
         }
 
+        /* Nút Xóa */
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+
         /* Mobile */
         @media (max-width: 600px) {
-            body {
-                padding: 15px;
-            }
-
-            .notebook {
-                width: 100%;
-                max-width: 100%;
-                padding: 15px;
-                margin: 0 auto;
-            }
-
-            .flashcard img {
-                width: 100%;
-                max-width: 100%;
-                max-height: 70vh; /* 70% chiều cao màn hình */
-                height: auto;
-                object-fit: contain;
-            }
-
-            .word {
-                font-size: 1.4em;
-            }
-
-            .nav-btn {
-                font-size: 30px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-
-            .button-group a {
-                width: 100%;
-            }
+            body { padding: 15px; }
+            .notebook { width: 100%; max-width: 100%; padding: 15px; margin: 0 auto; }
+            .flashcard img { width: 100%; max-height: 70vh; object-fit: contain; }
+            .word { font-size: 1.4em; }
+            .nav-btn { font-size: 30px; }
+            .button-group { flex-direction: column; }
+            .button-group a, .button-group button { width: 100%; }
         }
     </style>
-</head>
-<body>
+    </head>
+    <body>
 
-<h1>📖 Quyển vở từ vựng của bạn</h1>
+    <h1>📖 Quyển vở từ vựng của bạn</h1>
 
-{% if cards %}
+    {% if cards %}
     <div class="flashcard-container">
         <button class="nav-btn" onclick="prevCard()">&#8592;</button>
 
@@ -192,16 +167,19 @@
 
         <button class="nav-btn" onclick="nextCard()">&#8594;</button>
     </div>
+
     <div class="button-group">
         <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
         <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
+        <button class="delete-btn" onclick="deleteCard(currentIndex)">🗑 Xóa</button>
     </div>
-{% else %}
+
+    {% else %}
     <p style="text-align: center; font-size: 18px; margin-top: 30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
     <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
-{% endif %}
+    {% endif %}
 
-<script>
+    <script>
     const cards = {{ cards|tojson }};
     let currentIndex = 0;
 
@@ -209,7 +187,7 @@
     const flashcardWord = document.getElementById("flashcard-word");
     const flashcardDiv = document.getElementById("flashcard");
 
-    function showCard(index) {
+    function showCard(index){
         flashcardDiv.style.opacity = 0;
         setTimeout(() => {
             flashcardImg.src = cards[index].image_path;
@@ -218,70 +196,68 @@
         }, 200);
     }
 
-    function nextCard() {
+    function nextCard(){
         currentIndex = (currentIndex + 1) % cards.length;
         showCard(currentIndex);
     }
 
-    function prevCard() {
+    function prevCard(){
         currentIndex = (currentIndex - 1 + cards.length) % cards.length;
         showCard(currentIndex);
+    }
+
+    function deleteCard(index){
+        const cardId = cards[index].id;
+        if(!confirm("Bạn có chắc muốn xóa từ này?")) return;
+
+        fetch("/review/api/delete_card", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({card_id: cardId})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                alert("Đã xóa!");
+                cards.splice(index,1);
+                if(cards.length === 0){
+                    flashcardDiv.style.display = "none";
+                    document.querySelector(".delete-btn").style.display = "none";
+                    return;
+                }
+                if(currentIndex >= cards.length) currentIndex = 0;
+                showCard(currentIndex);
+            } else {
+                alert("Lỗi: " + data.error);
+            }
+        })
+        .catch(err => console.error(err));
     }
 
     // Swipe mobile
     let startX = 0;
     let isDragging = false;
 
-    flashcardDiv.addEventListener('touchstart', e => {
-        startX = e.touches[0].clientX;
-        isDragging = true;
-    });
-
+    flashcardDiv.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; });
     flashcardDiv.addEventListener('touchmove', e => {
-        if (!isDragging) return;
-        const currentX = e.touches[0].clientX;
-        const deltaX = currentX - startX;
-
-        if (deltaX > 80) {
-            prevCard();
-            isDragging = false;
-        } else if (deltaX < -80) {
-            nextCard();
-            isDragging = false;
-        }
+        if(!isDragging) return;
+        const deltaX = e.touches[0].clientX - startX;
+        if(deltaX > 80){ prevCard(); isDragging=false; }
+        else if(deltaX < -80){ nextCard(); isDragging=false; }
     });
-
-    flashcardDiv.addEventListener('touchend', () => {
-        isDragging = false;
-    });
+    flashcardDiv.addEventListener('touchend', ()=>{ isDragging=false; });
 
     // Drag desktop
-    flashcardDiv.addEventListener('mousedown', e => {
-        startX = e.clientX;
-        isDragging = true;
-    });
-
+    flashcardDiv.addEventListener('mousedown', e => { startX = e.clientX; isDragging=true; });
     flashcardDiv.addEventListener('mousemove', e => {
-        if (!isDragging) return;
+        if(!isDragging) return;
         const deltaX = e.clientX - startX;
-
-        if (deltaX > 80) {
-            prevCard();
-            isDragging = false;
-        } else if (deltaX < -80) {
-            nextCard();
-            isDragging = false;
-        }
+        if(deltaX > 80){ prevCard(); isDragging=false; }
+        else if(deltaX < -80){ nextCard(); isDragging=false; }
     });
+    flashcardDiv.addEventListener('mouseup', ()=>{ isDragging=false; });
+    flashcardDiv.addEventListener('mouseleave', ()=>{ isDragging=false; });
 
-    flashcardDiv.addEventListener('mouseup', () => {
-        isDragging = false;
-    });
-
-    flashcardDiv.addEventListener('mouseleave', () => {
-        isDragging = false;
-    });
-</script>
-
+    </script>
 </body>
 </html>
