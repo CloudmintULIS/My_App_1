@@ -258,7 +258,8 @@
         <td>{{ u.role }}</td>
         <td>
           <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="edit-btn">✏ Sửa</a> |
-          <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="delete-btn">🗑 Xóa</a>
+          <a href="{{ url_for('admin.delete_user', user_id=u.id) }}" class="delete-btn"
+             onclick="return confirm('Bạn có chắc muốn xóa user này?');">🗑 Xóa</a>
         </td>
       </tr>
       {% endfor %}
@@ -284,7 +285,8 @@
         <td>{{ card.timestamp }}</td>
         <td>
           <a href="{{ url_for('admin.edit_vocab', vocab_id=card.id) }}" class="edit-btn">✏ Sửa</a> |
-          <a href="{{ url_for('admin.delete_vocab', vocab_id=card.id) }}" class="delete-btn">🗑 Xóa</a>
+            <a href="{{ url_for('admin.delete_vocab', vocab_id=card.id) }}" class="delete-btn"
+              onclick="return confirm('Bạn có chắc muốn xóa từ vựng này?');">🗑 Xóa</a>
         </td>
       </tr>
       {% endfor %}

@@ -218,7 +218,7 @@
         .then(res => res.json())
         .then(data => {
             if(data.success){
-                alert("Đã xóa!");
+                // Xóa card khỏi mảng và hiển thị flashcard tiếp theo
                 cards.splice(index,1);
                 if(cards.length === 0){
                     flashcardDiv.style.display = "none";
@@ -233,6 +233,7 @@
         })
         .catch(err => console.error(err));
     }
+
 
     // Swipe mobile
     let startX = 0;
