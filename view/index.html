@@ -8,9 +8,14 @@
 <body>
   <!-- Thanh người dùng -->
   <div class="user-bar">
-    👤 Welcome, <strong>{{ username }}</strong>!
-    <a href="{{ url_for('auth.logout') }}" class="logout-btn">🚪 Logout</a>
-  </div>
+  👤 Welcome, <strong>{{ username }}</strong>!
+    {% if role == 'admin' %}
+      <a href="{{ url_for('admin.dashboard') }}" class="admin-btn">⚙️ Admin</a>
+    {% endif %}
+  <a href="{{ url_for('auth.logout') }}" class="logout-btn">🚪 Logout</a>
+
+
+</div>
 
   <h2 class="title">📷 English with me 💖</h2>
 
