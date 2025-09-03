@@ -1,5 +1,6 @@
 from flask import Flask
 from controllers.auth_controller import auth_bp
+from controllers.dictionary_controller import word_bp
 from controllers.main_controller import main_bp
 from controllers.review_controller import review_bp
 from controllers.quiz_controller import quiz_bp
@@ -25,6 +26,7 @@ app.register_blueprint(openAI_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(image_bp)
+app.register_blueprint(word_bp)
 
 @app.route("/ping")
 def ping():

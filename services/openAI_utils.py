@@ -23,10 +23,10 @@ def identify_image(image: Image.Image) -> str:
                         "type": "text",
                         "text": (
                             "Identify the main object in this photo.\n"
-                            "Reply in the form: 'This is a <object>' or 'This is an <object>'.\n"
-                            "If you would reply 'I'm sorry, I can't help with identifying or describing people in photos,you will reply 'This is a human'.\n"
-                            "instead reply 'This is a human'.\n"
-                            "If you cannot identify the object, reply exactly: 'unidentified'."
+                            "Reply with the object name only (e.g., 'apple', 'car', 'dog').\n"
+                            "If the object is a person, reply 'human'.\n"
+                            "If you are completely unable to guess, reply 'unidentified'.\n"
+                            "Do not write full sentences"
                         )
                     },
                     {

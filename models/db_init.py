@@ -31,7 +31,7 @@ def init_db():
         )
     ''')
 
-    # Bảng vocab_cards với ON DELETE CASCADE
+    # Bảng vocab_cards
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS vocab_cards (
             id SERIAL PRIMARY KEY,
@@ -42,7 +42,7 @@ def init_db():
         )
     ''')
 
-    # Nếu bảng đã tồn tại nhưng không có ON DELETE CASCADE thì chỉnh lại constraint
+    # Fix ràng buộc ON DELETE CASCADE nếu chưa có
     cursor.execute("""
         SELECT conname
         FROM pg_constraint
@@ -59,10 +59,22 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         ''')
 
+    # Bảng word_info (chứa thông tin mở rộng của từ vựng)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS word_info (
+            id SERIAL PRIMARY KEY,
+            word TEXT UNIQUE NOT NULL,
+            phonetic TEXT,
+            audio TEXT,
+            definition TEXT,
+            example TEXT
+        )
+    ''')
+
     conn.commit()
     cursor.close()
     conn.close()
-    print("✅ Database initialized successfully.")
+    print("✅ Database initialized successfully (users, vocab_cards, word_info).")
 
 if __name__ == '__main__':
     init_db()

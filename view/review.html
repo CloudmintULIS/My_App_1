@@ -161,7 +161,18 @@
         <div class="notebook">
             <div class="flashcard" id="flashcard">
                 <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
+
                 <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
+                <div class="phonetic" id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</div>
+                <div class="definition" id="flashcard-definition">{{ cards[0].definition or '' }}</div>
+                <div class="example" id="flashcard-example">{{ cards[0].example or '' }}</div>
+
+                {% if cards[0].audio %}
+                <audio id="flashcard-audio" controls>
+                    <source src="{{ cards[0].audio }}" type="audio/mpeg">
+                    Trình duyệt của bạn không hỗ trợ audio.
+                </audio>
+                {% endif %}
             </div>
         </div>
 
@@ -192,6 +203,18 @@
         setTimeout(() => {
             flashcardImg.src = cards[index].image_path;
             flashcardWord.textContent = cards[index].word;
+            document.getElementById("flashcard-phonetic").textContent = cards[index].phonetic || "";
+            document.getElementById("flashcard-definition").textContent = cards[index].definition || "";
+            document.getElementById("flashcard-example").textContent = cards[index].example || "";
+
+            const audioElem = document.getElementById("flashcard-audio");
+            if(cards[index].audio && audioElem){
+                audioElem.src = cards[index].audio;
+                audioElem.style.display = "block";
+            } else if(audioElem){
+                audioElem.style.display = "none";
+            }
+
             flashcardDiv.style.opacity = 1;
         }, 200);
     }

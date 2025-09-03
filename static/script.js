@@ -59,17 +59,21 @@ captureBtn.addEventListener('click', () => {
       .then(res => res.json())
       .then(data => {
         const label = data.label;
-        resultDiv.innerText = '✅ ' + label;
+        const wordInfo = data.word_info || {};
 
-        // Kiểm tra hỗ trợ Speech Synthesis
+        let html = `✅ <b>${label}</b>`;
+//        if (wordInfo.phonetic) html += ` (${wordInfo.phonetic})`;
+//        if (wordInfo.definition) html += `<br>📖 ${wordInfo.definition}`;
+//        if (wordInfo.example) html += `<br>💡 <i>${wordInfo.example}</i>`;
+//        if (wordInfo.audio) html += `<br><audio controls src="${wordInfo.audio}"></audio>`;
+
+        resultDiv.innerHTML = html;
+
+        // TTS
         if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
           const utterance = new SpeechSynthesisUtterance(label);
-          utterance.lang = 'en-US'; // hoặc 'vi-VN'
+          utterance.lang = 'en-US';
           speechSynthesis.speak(utterance);
-        } else {
-          console.warn("❌ Text-to-Speech không được hỗ trợ trên trình duyệt này.");
-          // Nếu muốn báo trên giao diện:
-          // resultDiv.innerText += " (TTS không được hỗ trợ)";
         }
       })
       .catch(err => {
