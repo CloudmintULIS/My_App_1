@@ -1,287 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn tập từ vựng</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #fdf6e3;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ôn tập từ vựng</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: #fdf6e3;
+        margin: 0;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    h1 {
+        margin-bottom: 30px;
+        color: #333;
+        text-align: center;
+    }
+    .flashcard-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+    }
+    .nav-btn {
+        background-color: transparent;
+        border: none;
+        font-size: 40px;
+        cursor: pointer;
+        color: #4CAF50;
+        transition: transform 0.2s ease;
+    }
+    .nav-btn:hover {
+        transform: scale(1.2);
+        color: #388e3c;
+    }
+    .notebook {
+        background: #fffdf5;
+        border: 2px dashed #bbb;
+        border-radius: 25px;
+        padding: 25px;
+        width: 360px;
+        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
+        position: relative;
+    }
+    .notebook::before {
+        content: "";
+        position: absolute;
+        left: -12px;
+        top: 20px;
+        width: 10px;
+        height: calc(100% - 40px);
+        background: repeating-linear-gradient(#ccc, #ccc 4px, transparent 4px, transparent 8px);
+    }
+    .flashcard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: opacity 0.4s ease;
+    }
+    .flashcard img {
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 10px;
+        margin: auto;
+    }
+    .word {
+        margin-top: 15px;
+        font-size: 1.6em;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+    .phonetic-container {
+        margin-top: 8px;
+        font-size: 1em;
+        color: #555;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    .audio-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2em;
+    }
+    .audio-btn:hover { color: #4CAF50; }
+    .definition, .example {
+        margin-top: 8px;
+        font-size: 1em;
+        color: #555;
+        text-align: center;
+    }
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 400px;
+    }
+    .button-group a, .button-group button {
+        flex: 1;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 8px;
+        font-size: 16px;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .back-btn { background-color: #81c784; color: white; }
+    .back-btn:hover { background-color: #66bb6a; }
+    .quiz-btn { background-color: #ff9800; color: white; }
+    .quiz-btn:hover { background-color: #e68900; }
+    .delete-btn { background-color: #e74c3c; color: white; }
+    .delete-btn:hover { background-color: #c0392b; }
+    @media (max-width: 600px) {
+        body { padding: 15px; }
+        .notebook { width: 100%; padding: 15px; margin: 0 auto; }
+        .flashcard img { width: 100%; max-height: 70vh; }
+        .word { font-size: 1.4em; }
+        .nav-btn { font-size: 30px; }
+        .button-group { flex-direction: column; }
+        .button-group a, .button-group button { width: 100%; }
+    }
+</style>
+</head>
+<body>
 
-        h1 {
-            margin-bottom: 30px;
-            color: #333;
-            text-align: center;
-        }
+<h1>📖 Quyển vở từ vựng của bạn</h1>
 
-        .flashcard-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
+{% if cards %}
+<div class="flashcard-container">
+    <button class="nav-btn" onclick="prevCard()">&#8592;</button>
 
-        .nav-btn {
-            background-color: transparent;
-            border: none;
-            font-size: 40px;
-            cursor: pointer;
-            color: #4CAF50;
-            transition: transform 0.2s ease;
-        }
+    <div class="notebook">
+        <div class="flashcard" id="flashcard">
+            <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
+            <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
 
-        .nav-btn:hover {
-            transform: scale(1.2);
-            color: #388e3c;
-        }
-
-        .notebook {
-            background: #fffdf5;
-            border: 2px dashed #bbb;
-            border-radius: 25px;
-            padding: 25px;
-            width: 360px;
-            box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
-            position: relative;
-        }
-
-        .notebook::before {
-            content: "";
-            position: absolute;
-            left: -12px;
-            top: 20px;
-            width: 10px;
-            height: calc(100% - 40px);
-            background: repeating-linear-gradient(
-                #ccc,
-                #ccc 4px,
-                transparent 4px,
-                transparent 8px
-            );
-        }
-
-        .flashcard {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: opacity 0.4s ease;
-        }
-
-        .flashcard img {
-            max-width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 10px;
-            margin: auto;
-        }
-
-        .word {
-            margin-top: 15px;
-            font-size: 1.6em;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .button-group a,
-        .button-group button {
-            flex: 1;
-            text-align: center;
-            padding: 10px 0;
-            border-radius: 8px;
-            font-size: 16px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        /* Giữ nguyên 2 nút a */
-        .back-btn {
-            background-color: #81c784;
-            color: white;
-        }
-        .back-btn:hover {
-            background-color: #66bb6a;
-        }
-
-        .quiz-btn {
-            background-color: #ff9800;
-            color: white;
-        }
-        .quiz-btn:hover {
-            background-color: #e68900;
-        }
-
-        /* Nút Xóa */
-        .delete-btn {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .delete-btn:hover {
-            background-color: #c0392b;
-        }
-
-
-        /* Mobile */
-        @media (max-width: 600px) {
-            body { padding: 15px; }
-            .notebook { width: 100%; max-width: 100%; padding: 15px; margin: 0 auto; }
-            .flashcard img { width: 100%; max-height: 70vh; object-fit: contain; }
-            .word { font-size: 1.4em; }
-            .nav-btn { font-size: 30px; }
-            .button-group { flex-direction: column; }
-            .button-group a, .button-group button { width: 100%; }
-        }
-    </style>
-    </head>
-    <body>
-
-    <h1>📖 Quyển vở từ vựng của bạn</h1>
-
-    {% if cards %}
-    <div class="flashcard-container">
-        <button class="nav-btn" onclick="prevCard()">&#8592;</button>
-
-        <div class="notebook">
-            <div class="flashcard" id="flashcard">
-                <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
-
-                <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
-                <div class="phonetic" id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</div>
-                <div class="definition" id="flashcard-definition">{{ cards[0].definition or '' }}</div>
-                <div class="example" id="flashcard-example">{{ cards[0].example or '' }}</div>
-
+            <!-- Phiên âm + Loa -->
+            <div class="phonetic-container">
+                <span id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
                 {% if cards[0].audio %}
-                <audio id="flashcard-audio" controls>
-                    <source src="{{ cards[0].audio }}" type="audio/mpeg">
-                    Trình duyệt của bạn không hỗ trợ audio.
-                </audio>
+                    <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
+                    <audio id="flashcard-audio" src="{{ cards[0].audio }}"></audio>
+                {% endif %}
+            </div>
+
+            <!-- Definition -->
+            <div class="definition" id="flashcard-definition">
+                {% if cards[0].definition %}
+                    <strong>Def:</strong> {{ cards[0].definition }}
+                {% endif %}
+            </div>
+
+            <!-- Example -->
+            <div class="example" id="flashcard-example">
+                {% if cards[0].example %}
+                    <strong>Ex:</strong> {{ cards[0].example }}
                 {% endif %}
             </div>
         </div>
-
-        <button class="nav-btn" onclick="nextCard()">&#8594;</button>
     </div>
 
-    <div class="button-group">
-        <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
-        <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
-        <button class="delete-btn" onclick="deleteCard(currentIndex)">🗑 Xóa</button>
-    </div>
+    <button class="nav-btn" onclick="nextCard()">&#8594;</button>
+</div>
 
-    {% else %}
-    <p style="text-align: center; font-size: 18px; margin-top: 30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
+<div class="button-group">
     <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
-    {% endif %}
+    <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
+    <button class="delete-btn" onclick="deleteCard(currentIndex)">🗑 Xóa</button>
+</div>
 
-    <script>
-    const cards = {{ cards|tojson }};
-    let currentIndex = 0;
+{% else %}
+<p style="text-align:center; font-size:18px; margin-top:30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
+<a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
+{% endif %}
 
-    const flashcardImg = document.getElementById("flashcard-img");
-    const flashcardWord = document.getElementById("flashcard-word");
-    const flashcardDiv = document.getElementById("flashcard");
+<script>
+const cards = {{ cards|tojson }};
+let currentIndex = 0;
 
-    function showCard(index){
-        flashcardDiv.style.opacity = 0;
-        setTimeout(() => {
-            flashcardImg.src = cards[index].image_path;
-            flashcardWord.textContent = cards[index].word;
-            document.getElementById("flashcard-phonetic").textContent = cards[index].phonetic || "";
-            document.getElementById("flashcard-definition").textContent = cards[index].definition || "";
-            document.getElementById("flashcard-example").textContent = cards[index].example || "";
+const flashcardDiv = document.getElementById("flashcard");
+const flashcardImg = document.getElementById("flashcard-img");
+const flashcardWord = document.getElementById("flashcard-word");
 
-            const audioElem = document.getElementById("flashcard-audio");
-            if(cards[index].audio && audioElem){
-                audioElem.src = cards[index].audio;
-                audioElem.style.display = "block";
-            } else if(audioElem){
-                audioElem.style.display = "none";
+function showCard(index){
+    flashcardDiv.style.opacity = 0;
+    setTimeout(() => {
+        const card = cards[index];
+        flashcardImg.src = card.image_path;
+        flashcardWord.textContent = card.word;
+
+        // Phiên âm
+        const phoneticSpan = document.getElementById("flashcard-phonetic");
+        phoneticSpan.textContent = card.phonetic || "";
+
+        // Audio
+        const audioElem = document.getElementById("flashcard-audio");
+        const audioBtn = document.querySelector(".audio-btn");
+        if(card.audio && audioElem){
+            audioElem.src = card.audio;
+            if(audioBtn) audioBtn.style.display = "inline-block";
+        } else {
+            if(audioBtn) audioBtn.style.display = "none";
+        }
+
+        // Definition & Example
+        document.getElementById("flashcard-definition").innerHTML = card.definition ? `<strong>Def:</strong> ${card.definition}` : "";
+        document.getElementById("flashcard-example").innerHTML = card.example ? `<strong>Ex:</strong> ${card.example}` : "";
+
+        flashcardDiv.style.opacity = 1;
+    }, 200);
+}
+
+function playAudio(){
+    const audioElem = document.getElementById("flashcard-audio");
+    if(audioElem) audioElem.play();
+}
+
+function nextCard(){
+    currentIndex = (currentIndex + 1) % cards.length;
+    showCard(currentIndex);
+}
+
+function prevCard(){
+    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+    showCard(currentIndex);
+}
+
+function deleteCard(index){
+    if(!confirm("Bạn có chắc muốn xóa từ này?")) return;
+    const cardId = cards[index].id;
+
+    fetch("/review/api/delete_card", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({card_id: cardId})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            cards.splice(index, 1);
+            if(cards.length === 0){
+                flashcardDiv.style.display = "none";
+                document.querySelector(".delete-btn").style.display = "none";
+                return;
             }
+            if(currentIndex >= cards.length) currentIndex = 0;
+            showCard(currentIndex);
+        } else {
+            alert("Lỗi: " + data.error);
+        }
+    })
+    .catch(err => console.error(err));
+}
 
-            flashcardDiv.style.opacity = 1;
-        }, 200);
-    }
+// Swipe / Drag
+let startX = 0;
+let isDragging = false;
 
-    function nextCard(){
-        currentIndex = (currentIndex + 1) % cards.length;
-        showCard(currentIndex);
-    }
+// Mobile
+flashcardDiv.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging=true; });
+flashcardDiv.addEventListener('touchmove', e => {
+    if(!isDragging) return;
+    const deltaX = e.touches[0].clientX - startX;
+    if(deltaX > 80){ prevCard(); isDragging=false; }
+    else if(deltaX < -80){ nextCard(); isDragging=false; }
+});
+flashcardDiv.addEventListener('touchend', ()=>{ isDragging=false; });
 
-    function prevCard(){
-        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-        showCard(currentIndex);
-    }
+// Desktop
+flashcardDiv.addEventListener('mousedown', e => { startX = e.clientX; isDragging=true; });
+flashcardDiv.addEventListener('mousemove', e => {
+    if(!isDragging) return;
+    const deltaX = e.clientX - startX;
+    if(deltaX > 80){ prevCard(); isDragging=false; }
+    else if(deltaX < -80){ nextCard(); isDragging=false; }
+});
+flashcardDiv.addEventListener('mouseup', ()=>{ isDragging=false; });
+flashcardDiv.addEventListener('mouseleave', ()=>{ isDragging=false; });
 
-    function deleteCard(index){
-        const cardId = cards[index].id;
-        if(!confirm("Bạn có chắc muốn xóa từ này?")) return;
-
-        fetch("/review/api/delete_card", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({card_id: cardId})
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                // Xóa card khỏi mảng và hiển thị flashcard tiếp theo
-                cards.splice(index,1);
-                if(cards.length === 0){
-                    flashcardDiv.style.display = "none";
-                    document.querySelector(".delete-btn").style.display = "none";
-                    return;
-                }
-                if(currentIndex >= cards.length) currentIndex = 0;
-                showCard(currentIndex);
-            } else {
-                alert("Lỗi: " + data.error);
-            }
-        })
-        .catch(err => console.error(err));
-    }
-
-
-    // Swipe mobile
-    let startX = 0;
-    let isDragging = false;
-
-    flashcardDiv.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging = true; });
-    flashcardDiv.addEventListener('touchmove', e => {
-        if(!isDragging) return;
-        const deltaX = e.touches[0].clientX - startX;
-        if(deltaX > 80){ prevCard(); isDragging=false; }
-        else if(deltaX < -80){ nextCard(); isDragging=false; }
-    });
-    flashcardDiv.addEventListener('touchend', ()=>{ isDragging=false; });
-
-    // Drag desktop
-    flashcardDiv.addEventListener('mousedown', e => { startX = e.clientX; isDragging=true; });
-    flashcardDiv.addEventListener('mousemove', e => {
-        if(!isDragging) return;
-        const deltaX = e.clientX - startX;
-        if(deltaX > 80){ prevCard(); isDragging=false; }
-        else if(deltaX < -80){ nextCard(); isDragging=false; }
-    });
-    flashcardDiv.addEventListener('mouseup', ()=>{ isDragging=false; });
-    flashcardDiv.addEventListener('mouseleave', ()=>{ isDragging=false; });
-
-    </script>
+</script>
 </body>
 </html>
