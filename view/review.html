@@ -121,6 +121,39 @@
     .quiz-btn:hover { background-color: #e68900; }
     .delete-btn { background-color: #e74c3c; color: white; }
     .delete-btn:hover { background-color: #c0392b; }
+
+    .micro-btn {
+        font-size: 1.2em;        /* Nhỏ như icon loa */
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        background: #fff;         /* màu nền mặc định */
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .micro-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .micro-btn.recording {
+        background-color: #2196F3; /* xanh dương khi đang ghi âm */
+        color: white;
+        animation: pulse-btn 1.2s infinite;
+    }
+
+    @keyframes pulse-btn {
+        0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+    }
+
     @media (max-width: 600px) {
         body { padding: 15px; }
         .notebook { width: 100%; padding: 15px; margin: 0 auto; }
@@ -145,6 +178,7 @@
             <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
             <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
 
+
             <!-- Phiên âm + Loa + Nút Nói -->
             <div class="phonetic-container">
                 <span id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
@@ -152,7 +186,7 @@
                     <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
                     <audio id="flashcard-audio" src="{{ cards[0].audio }}"></audio>
                 {% endif %}
-                <button id="pronounce-btn">🎙 Nói</button>
+                <button id="pronounce-btn" class="micro-btn" title="Nhấn và nói">🎤</button>
             </div>
 
             <!-- Hiển thị kết quả highlight -->
@@ -286,7 +320,9 @@ pronounceBtn.onclick = async () => {
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.start();
     pronounceBtn.disabled = true;
-    highlightDiv.textContent = "Đang ghi âm..."; // hiển thị lúc đang ghi
+
+    // Thêm class 'recording' khi đang ghi âm
+    pronounceBtn.classList.add('recording');
 
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
@@ -304,24 +340,32 @@ pronounceBtn.onclick = async () => {
             const data = await res.json();
 
             if(data.highlight){
-                // Cập nhật highlight trực tiếp lên từ gốc
+                // Cập nhật highlight lên từ gốc
                 flashcardWord.innerHTML = data.highlight;
+
+                // ❌ Tạm comment chỗ hiển thị transcript bên dưới
+                //highlightDiv.innerHTML = `<em>Transcript nhận diện:</em> ${data.transcript}`;
+            } else {
+                // Nếu lỗi thì hiện từ gốc bình thường
+                flashcardWord.textContent = cards[currentIndex].word;
+                highlightDiv.textContent = data.result || "Lỗi khi chấm phát âm";
             }
 
         } catch(err){
             console.error(err);
-            // Nếu lỗi thì cũng xóa "Đang ghi âm"
             flashcardWord.textContent = cards[currentIndex].word;
+            highlightDiv.textContent = "Lỗi khi gọi API";
         }
 
-        // --- Reset trạng thái ---
+        // --- Reset trạng thái nút ---
         pronounceBtn.disabled = false;
-        highlightDiv.textContent = ""; // xóa dòng "Đang ghi âm..."
+        pronounceBtn.classList.remove('recording'); // bỏ viền xanh khi xong
     };
 
     // Dừng sau 3s
     setTimeout(() => mediaRecorder.stop(), 3000);
 };
+
 </script>
 </body>
 

@@ -36,8 +36,8 @@ def check_pronounce():
     if not audio_file:
         return jsonify({"result": "Không có audio"}), 400
 
-    os.makedirs("/tmp", exist_ok=True)
-    file_path = f"/tmp/{uuid.uuid4().hex}.wav"
+    os.makedirs("tmp", exist_ok=True)
+    file_path = f"tmp/{uuid.uuid4().hex}.wav"
     audio_file.save(file_path)
 
     try:
