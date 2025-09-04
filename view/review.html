@@ -145,27 +145,27 @@
             <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
             <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
 
-            <!-- Phiên âm + Loa -->
+            <!-- Phiên âm + Loa + Nút Nói -->
             <div class="phonetic-container">
                 <span id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
                 {% if cards[0].audio %}
                     <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
                     <audio id="flashcard-audio" src="{{ cards[0].audio }}"></audio>
                 {% endif %}
+                <button id="pronounce-btn">🎙 Nói</button>
             </div>
+
+            <!-- Hiển thị kết quả highlight -->
+            <div id="highlight-result" style="margin-top:5px; font-size:1.2em;"></div>
 
             <!-- Definition -->
             <div class="definition" id="flashcard-definition">
-                {% if cards[0].definition %}
-                    <strong>Def:</strong> {{ cards[0].definition }}
-                {% endif %}
+                {% if cards[0].definition %}<strong>Def:</strong> {{ cards[0].definition }}{% endif %}
             </div>
 
             <!-- Example -->
             <div class="example" id="flashcard-example">
-                {% if cards[0].example %}
-                    <strong>Ex:</strong> {{ cards[0].example }}
-                {% endif %}
+                {% if cards[0].example %}<strong>Ex:</strong> {{ cards[0].example }}{% endif %}
             </div>
         </div>
     </div>
@@ -191,6 +191,7 @@ let currentIndex = 0;
 const flashcardDiv = document.getElementById("flashcard");
 const flashcardImg = document.getElementById("flashcard-img");
 const flashcardWord = document.getElementById("flashcard-word");
+const highlightDiv = document.getElementById("highlight-result");
 
 function showCard(index){
     flashcardDiv.style.opacity = 0;
@@ -212,6 +213,9 @@ function showCard(index){
         } else {
             if(audioBtn) audioBtn.style.display = "none";
         }
+
+        // Reset highlight
+        highlightDiv.innerHTML = "";
 
         // Definition & Example
         document.getElementById("flashcard-definition").innerHTML = card.definition ? `<strong>Def:</strong> ${card.definition}` : "";
@@ -263,31 +267,61 @@ function deleteCard(index){
     .catch(err => console.error(err));
 }
 
-// Swipe / Drag
-let startX = 0;
-let isDragging = false;
-
-// Mobile
+// Swipe / Drag (giữ nguyên)
+let startX = 0, isDragging = false;
 flashcardDiv.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging=true; });
-flashcardDiv.addEventListener('touchmove', e => {
-    if(!isDragging) return;
-    const deltaX = e.touches[0].clientX - startX;
-    if(deltaX > 80){ prevCard(); isDragging=false; }
-    else if(deltaX < -80){ nextCard(); isDragging=false; }
-});
+flashcardDiv.addEventListener('touchmove', e => { if(!isDragging) return; const deltaX = e.touches[0].clientX - startX; if(deltaX > 80){ prevCard(); isDragging=false; } else if(deltaX < -80){ nextCard(); isDragging=false; } });
 flashcardDiv.addEventListener('touchend', ()=>{ isDragging=false; });
-
-// Desktop
 flashcardDiv.addEventListener('mousedown', e => { startX = e.clientX; isDragging=true; });
-flashcardDiv.addEventListener('mousemove', e => {
-    if(!isDragging) return;
-    const deltaX = e.clientX - startX;
-    if(deltaX > 80){ prevCard(); isDragging=false; }
-    else if(deltaX < -80){ nextCard(); isDragging=false; }
-});
+flashcardDiv.addEventListener('mousemove', e => { if(!isDragging) return; const deltaX = e.clientX - startX; if(deltaX > 80){ prevCard(); isDragging=false; } else if(deltaX < -80){ nextCard(); isDragging=false; } });
 flashcardDiv.addEventListener('mouseup', ()=>{ isDragging=false; });
 flashcardDiv.addEventListener('mouseleave', ()=>{ isDragging=false; });
 
+// --- Nút nói & highlight ---
+let mediaRecorder, audioChunks = [];
+const pronounceBtn = document.getElementById("pronounce-btn");
+pronounceBtn.onclick = async () => {
+    audioChunks = [];
+    let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+    pronounceBtn.disabled = true;
+    highlightDiv.textContent = "Đang ghi âm..."; // hiển thị lúc đang ghi
+
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+    mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const formData = new FormData();
+        formData.append('audio', audioBlob);
+        formData.append('word', cards[currentIndex].word);
+
+        try {
+            const res = await fetch("/review/api/check_pronounce", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+
+            if(data.highlight){
+                // Cập nhật highlight trực tiếp lên từ gốc
+                flashcardWord.innerHTML = data.highlight;
+            }
+
+        } catch(err){
+            console.error(err);
+            // Nếu lỗi thì cũng xóa "Đang ghi âm"
+            flashcardWord.textContent = cards[currentIndex].word;
+        }
+
+        // --- Reset trạng thái ---
+        pronounceBtn.disabled = false;
+        highlightDiv.textContent = ""; // xóa dòng "Đang ghi âm..."
+    };
+
+    // Dừng sau 3s
+    setTimeout(() => mediaRecorder.stop(), 3000);
+};
 </script>
 </body>
-</html>
+
