@@ -2,10 +2,17 @@
 import psycopg2
 from models.db_init import get_db_connection
 
-def save_word_info(word, phonetic, audio, definition, example):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("""
+def save_word_info(word, phonetic, audio, definition, example, cursor=None):
+    """
+    Lưu hoặc cập nhật word_info. Nếu cursor được cung cấp thì dùng, không thì tự tạo.
+    """
+    own_conn = False
+    if cursor is None:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        own_conn = True
+
+    cursor.execute("""
         INSERT INTO word_info (word, phonetic, audio, definition, example)
         VALUES (%s, %s, %s, %s, %s)
         ON CONFLICT (word) DO UPDATE
@@ -15,19 +22,34 @@ def save_word_info(word, phonetic, audio, definition, example):
             example = EXCLUDED.example
         RETURNING id;
     """, (word, phonetic, audio, definition, example))
-    word_id = cur.fetchone()[0]
-    conn.commit()
-    cur.close()
-    conn.close()
+
+    word_id = cursor.fetchone()[0]
+
+    if own_conn:
+        conn.commit()
+        cursor.close()
+        conn.close()
+
     return word_id
 
-def get_word_info_from_db(word):
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT word, phonetic, audio, definition, example FROM word_info WHERE word=%s;", (word,))
-    row = cur.fetchone()
-    cur.close()
-    conn.close()
+
+def get_word_info_from_db(word, cursor=None):
+    """
+    Lấy thông tin word_info từ DB. Nếu cursor được cung cấp thì dùng, không thì tự tạo.
+    """
+    own_conn = False
+    if cursor is None:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        own_conn = True
+
+    cursor.execute("SELECT word, phonetic, audio, definition, example FROM word_info WHERE word=%s;", (word,))
+    row = cursor.fetchone()
+
+    if own_conn:
+        cursor.close()
+        conn.close()
+
     if row:
         return {
             "word": row[0],

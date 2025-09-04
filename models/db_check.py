@@ -1,4 +1,22 @@
+# print_db_tables.py
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # load DATABASE_URL từ file .env nếu có
+
+
+def get_db_connection():
+    """
+    Kết nối PostgreSQL từ URL.
+    """
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    if not DATABASE_URL:
+        raise Exception("Bạn cần set biến môi trường DATABASE_URL hoặc file .env!")
+
+    conn = psycopg2.connect(DATABASE_URL)
+    return conn
+
 
 def print_table_data(conn, table_name):
     cur = conn.cursor()
@@ -7,9 +25,9 @@ def print_table_data(conn, table_name):
     cur.execute(f"""
         SELECT column_name 
         FROM information_schema.columns 
-        WHERE table_name = '{table_name}'
+        WHERE table_name = %s
         ORDER BY ordinal_position;
-    """)
+    """, (table_name,))
     columns = [col[0] for col in cur.fetchall()]
 
     # Lấy toàn bộ dữ liệu trong bảng
@@ -27,30 +45,28 @@ def print_table_data(conn, table_name):
 
     cur.close()
 
+
 # ========================
 # MAIN
 # ========================
-conn = psycopg2.connect(
-    "postgresql://lecuong:eWHFyeAV6NhQOTNhr8OFTooRE6v4IM2g@dpg-d2blo6buibrs73fo0o00-a.singapore-postgres.render.com/mydatabase_ri2s"
-)
-cur = conn.cursor()
+if __name__ == "__main__":
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-# Lấy tất cả các bảng trong schema public
-cur.execute("""
-    SELECT table_name 
-    FROM information_schema.tables 
-    WHERE table_schema='public'
-    ORDER BY table_name;
-""")
-tables = [t[0] for t in cur.fetchall()]
-cur.close()
+    # Lấy tất cả các bảng trong schema public
+    cur.execute("""
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema='public'
+        ORDER BY table_name;
+    """)
+    tables = [t[0] for t in cur.fetchall()]
+    cur.close()
 
-print("📂 Danh sách bảng:", tables)
+    print("📂 Danh sách bảng:", tables)
 
-# In dữ liệu từng bảng (full)
-for table in tables:
-    print_table_data(conn, table)
+    # In dữ liệu từng bảng (full)
+    for table in tables:
+        print_table_data(conn, table)
 
-conn.close()
-
-
+    conn.close()
