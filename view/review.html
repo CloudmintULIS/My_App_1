@@ -14,159 +14,82 @@
         flex-direction: column;
         align-items: center;
     }
-    h1 {
-        margin-bottom: 30px;
-        color: #333;
-        text-align: center;
-    }
+    h1 { margin-bottom: 30px; color: #333; text-align: center; }
     .flashcard-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
+        display: flex; align-items: center; justify-content: center; gap: 20px;
     }
     .nav-btn {
-        background-color: transparent;
-        border: none;
-        font-size: 40px;
-        cursor: pointer;
-        color: #4CAF50;
-        transition: transform 0.2s ease;
+        background: none; border: none; font-size: 40px; cursor: pointer;
+        color: #4CAF50; transition: transform 0.2s ease;
     }
-    .nav-btn:hover {
-        transform: scale(1.2);
-        color: #388e3c;
-    }
+    .nav-btn:hover { transform: scale(1.2); color: #388e3c; }
     .notebook {
-        background: #fffdf5;
-        border: 2px dashed #bbb;
-        border-radius: 25px;
-        padding: 25px;
-        width: 360px;
-        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.15);
+        background: #fffdf5; border: 2px dashed #bbb; border-radius: 25px;
+        padding: 25px; width: 360px; box-shadow: 4px 4px 20px rgba(0,0,0,0.15);
         position: relative;
     }
     .notebook::before {
-        content: "";
-        position: absolute;
-        left: -12px;
-        top: 20px;
-        width: 10px;
-        height: calc(100% - 40px);
+        content:""; position:absolute; left:-12px; top:20px;
+        width:10px; height:calc(100% - 40px);
         background: repeating-linear-gradient(#ccc, #ccc 4px, transparent 4px, transparent 8px);
     }
-    .flashcard {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: opacity 0.4s ease;
-    }
+    .flashcard { display:flex; flex-direction:column; align-items:center; transition:opacity 0.4s ease; }
     .flashcard img {
-        max-width: 100%;
-        max-height: 200px;
-        object-fit: contain;
-        border-radius: 10px;
-        margin: auto;
+        max-width:100%; max-height:200px; object-fit:contain;
+        border-radius:10px; margin:auto;
     }
-    .word {
-        margin-top: 15px;
-        font-size: 1.6em;
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-    }
+    .word { margin-top:15px; font-size:1.6em; font-weight:bold; color:#333; text-align:center; }
     .phonetic-container {
-        margin-top: 8px;
-        font-size: 1em;
-        color: #555;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
+        margin-top:8px; font-size:1em; color:#555;
+        display:flex; justify-content:center; align-items:center; gap:8px;
     }
     .audio-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 1.2em;
+        background:none; border:none; cursor:pointer; font-size:1.2em;
     }
-    .audio-btn:hover { color: #4CAF50; }
-    .definition, .example {
-        margin-top: 8px;
-        font-size: 1em;
-        color: #555;
-        text-align: center;
-    }
+    .audio-btn:hover { color:#4CAF50; }
+    .definition,.example { margin-top:8px; font-size:1em; color:#555; text-align:center; }
     .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-        width: 100%;
-        max-width: 400px;
+        display:flex; gap:10px; margin-top:20px; width:100%; max-width:400px;
     }
-    .button-group a, .button-group button {
-        flex: 1;
-        text-align: center;
-        padding: 10px 0;
-        border-radius: 8px;
-        font-size: 16px;
-        text-decoration: none;
-        border: none;
-        cursor: pointer;
+    .button-group a,.button-group button {
+        flex:1; text-align:center; padding:10px 0; border-radius:8px;
+        font-size:16px; text-decoration:none; border:none; cursor:pointer;
         transition: background-color 0.3s ease;
     }
-    .back-btn { background-color: #81c784; color: white; }
-    .back-btn:hover { background-color: #66bb6a; }
-    .quiz-btn { background-color: #ff9800; color: white; }
-    .quiz-btn:hover { background-color: #e68900; }
-    .delete-btn { background-color: #e74c3c; color: white; }
-    .delete-btn:hover { background-color: #c0392b; }
-
+    .back-btn { background:#81c784; color:white; }
+    .back-btn:hover { background:#66bb6a; }
+    .quiz-btn { background:#ff9800; color:white; }
+    .quiz-btn:hover { background:#e68900; }
+    .delete-btn { background:#e74c3c; color:white; }
+    .delete-btn:hover { background:#c0392b; }
     .micro-btn {
-        font-size: 1.2em;        /* Nhỏ như icon loa */
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        background: #fff;         /* màu nền mặc định */
-        color: #333;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-size:1.2em; border:none; border-radius:50%;
+        width:40px; height:40px; background:#fff; color:#333; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
         transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        box-shadow:0 2px 5px rgba(0,0,0,0.2);
     }
-
-    .micro-btn:hover {
-        transform: scale(1.1);
-    }
-
+    .micro-btn:hover { transform:scale(1.1); }
     .micro-btn.recording {
-        background-color: #2196F3; /* xanh dương khi đang ghi âm */
-        color: white;
-        animation: pulse-btn 1.2s infinite;
+        background:#2196F3; color:white; animation:pulse-btn 1.2s infinite;
     }
-
     @keyframes pulse-btn {
-        0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.7); }
-        70% { box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+        0%{box-shadow:0 0 0 0 rgba(33,150,243,0.7);}
+        70%{box-shadow:0 0 0 10px rgba(33,150,243,0);}
+        100%{box-shadow:0 0 0 0 rgba(33,150,243,0);}
     }
-
-    @media (max-width: 600px) {
-        body { padding: 15px; }
-        .notebook { width: 100%; padding: 15px; margin: 0 auto; }
-        .flashcard img { width: 100%; max-height: 70vh; }
-        .word { font-size: 1.4em; }
-        .nav-btn { font-size: 30px; }
-        .button-group { flex-direction: column; }
-        .button-group a, .button-group button { width: 100%; }
+    @media(max-width:600px){
+        body{padding:15px;}
+        .notebook{width:100%; padding:15px; margin:0 auto;}
+        .flashcard img{width:100%; max-height:70vh;}
+        .word{font-size:1.4em;}
+        .nav-btn{font-size:30px;}
+        .button-group{flex-direction:column;}
+        .button-group a,.button-group button{width:100%;}
     }
 </style>
 </head>
 <body>
-
 <h1>📖 Quyển vở từ vựng của bạn</h1>
 
 {% if cards %}
@@ -178,26 +101,18 @@
             <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
             <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
 
-
-            <!-- Phiên âm + Loa + Nút Nói -->
+            <!-- Phiên âm + Loa + Mic -->
             <div class="phonetic-container">
                 <span id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
-                {% if cards[0].audio %}
-                    <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
-                    <audio id="flashcard-audio" src="{{ cards[0].audio }}"></audio>
-                {% endif %}
+                <button id="audio-btn" class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
+                <audio id="flashcard-audio" src="{{ cards[0].audio or '' }}"></audio>
                 <button id="pronounce-btn" class="micro-btn" title="Nhấn và nói">🎤</button>
             </div>
 
-            <!-- Hiển thị kết quả highlight -->
             <div id="highlight-result" style="margin-top:5px; font-size:1.2em;"></div>
-
-            <!-- Definition -->
             <div class="definition" id="flashcard-definition">
                 {% if cards[0].definition %}<strong>Def:</strong> {{ cards[0].definition }}{% endif %}
             </div>
-
-            <!-- Example -->
             <div class="example" id="flashcard-example">
                 {% if cards[0].example %}<strong>Ex:</strong> {{ cards[0].example }}{% endif %}
             </div>
@@ -212,7 +127,6 @@
     <a class="quiz-btn" href="{{ url_for('quiz.quiz') }}">🎮 Chơi Quiz</a>
     <button class="delete-btn" onclick="deleteCard(currentIndex)">🗑 Xóa</button>
 </div>
-
 {% else %}
 <p style="text-align:center; font-size:18px; margin-top:30px;">😕 Bạn chưa có từ vựng nào để ôn tập.</p>
 <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
@@ -225,6 +139,9 @@ let currentIndex = 0;
 const flashcardDiv = document.getElementById("flashcard");
 const flashcardImg = document.getElementById("flashcard-img");
 const flashcardWord = document.getElementById("flashcard-word");
+const phoneticSpan = document.getElementById("flashcard-phonetic");
+const audioElem = document.getElementById("flashcard-audio");
+const audioBtn = document.getElementById("audio-btn");
 const highlightDiv = document.getElementById("highlight-result");
 
 function showCard(index){
@@ -233,99 +150,93 @@ function showCard(index){
         const card = cards[index];
         flashcardImg.src = card.image_path;
         flashcardWord.textContent = card.word;
-
-        // Phiên âm
-        const phoneticSpan = document.getElementById("flashcard-phonetic");
         phoneticSpan.textContent = card.phonetic || "";
 
         // Audio
-        const audioElem = document.getElementById("flashcard-audio");
-        const audioBtn = document.querySelector(".audio-btn");
-        if(card.audio && audioElem){
+        if(card.audio){
             audioElem.src = card.audio;
-            if(audioBtn) audioBtn.style.display = "inline-block";
+            audioBtn.style.display = "inline-block";
         } else {
-            if(audioBtn) audioBtn.style.display = "none";
+            audioElem.src = "";
+            audioBtn.style.display = "none";
         }
 
-        // Reset highlight
         highlightDiv.innerHTML = "";
-
-        // Definition & Example
-        document.getElementById("flashcard-definition").innerHTML = card.definition ? `<strong>Def:</strong> ${card.definition}` : "";
-        document.getElementById("flashcard-example").innerHTML = card.example ? `<strong>Ex:</strong> ${card.example}` : "";
+        document.getElementById("flashcard-definition").innerHTML =
+            card.definition ? `<strong>Def:</strong> ${card.definition}` : "";
+        document.getElementById("flashcard-example").innerHTML =
+            card.example ? `<strong>Ex:</strong> ${card.example}` : "";
 
         flashcardDiv.style.opacity = 1;
     }, 200);
 }
-
-function playAudio(){
-    const audioElem = document.getElementById("flashcard-audio");
-    if(audioElem) audioElem.play();
-}
-
-function nextCard(){
-    currentIndex = (currentIndex + 1) % cards.length;
-    showCard(currentIndex);
-}
-
-function prevCard(){
-    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-    showCard(currentIndex);
-}
+function playAudio(){ if(audioElem && audioElem.src) audioElem.play(); }
+function nextCard(){ currentIndex=(currentIndex+1)%cards.length; showCard(currentIndex); }
+function prevCard(){ currentIndex=(currentIndex-1+cards.length)%cards.length; showCard(currentIndex); }
 
 function deleteCard(index){
     if(!confirm("Bạn có chắc muốn xóa từ này?")) return;
     const cardId = cards[index].id;
-
-    fetch("/review/api/delete_card", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({card_id: cardId})
+    fetch("/review/api/delete_card",{
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({card_id:cardId})
     })
-    .then(res => res.json())
-    .then(data => {
+    .then(res=>res.json())
+    .then(data=>{
         if(data.success){
-            cards.splice(index, 1);
-            if(cards.length === 0){
-                flashcardDiv.style.display = "none";
-                document.querySelector(".delete-btn").style.display = "none";
+            cards.splice(index,1);
+            if(cards.length===0){
+                flashcardDiv.style.display="none";
+                document.querySelector(".delete-btn").style.display="none";
                 return;
             }
-            if(currentIndex >= cards.length) currentIndex = 0;
+            if(currentIndex>=cards.length) currentIndex=0;
             showCard(currentIndex);
-        } else {
-            alert("Lỗi: " + data.error);
-        }
+        }else alert("Lỗi: "+data.error);
     })
-    .catch(err => console.error(err));
+    .catch(err=>console.error(err));
 }
 
-// Swipe / Drag (giữ nguyên)
-let startX = 0, isDragging = false;
-flashcardDiv.addEventListener('touchstart', e => { startX = e.touches[0].clientX; isDragging=true; });
-flashcardDiv.addEventListener('touchmove', e => { if(!isDragging) return; const deltaX = e.touches[0].clientX - startX; if(deltaX > 80){ prevCard(); isDragging=false; } else if(deltaX < -80){ nextCard(); isDragging=false; } });
-flashcardDiv.addEventListener('touchend', ()=>{ isDragging=false; });
-flashcardDiv.addEventListener('mousedown', e => { startX = e.clientX; isDragging=true; });
-flashcardDiv.addEventListener('mousemove', e => { if(!isDragging) return; const deltaX = e.clientX - startX; if(deltaX > 80){ prevCard(); isDragging=false; } else if(deltaX < -80){ nextCard(); isDragging=false; } });
-flashcardDiv.addEventListener('mouseup', ()=>{ isDragging=false; });
-flashcardDiv.addEventListener('mouseleave', ()=>{ isDragging=false; });
+// Swipe
+let startX=0,isDragging=false;
+flashcardDiv.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;isDragging=true;});
+flashcardDiv.addEventListener('touchmove',e=>{
+    if(!isDragging)return;
+    const deltaX=e.touches[0].clientX-startX;
+    if(deltaX>80){prevCard();isDragging=false;}
+    else if(deltaX<-80){nextCard();isDragging=false;}
+});
+flashcardDiv.addEventListener('touchend',()=>{isDragging=false;});
+flashcardDiv.addEventListener('mousedown',e=>{startX=e.clientX;isDragging=true;});
+flashcardDiv.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    const deltaX=e.clientX-startX;
+    if(deltaX>80){prevCard();isDragging=false;}
+    else if(deltaX<-80){nextCard();isDragging=false;}
+});
+flashcardDiv.addEventListener('mouseup',()=>{isDragging=false;});
+flashcardDiv.addEventListener('mouseleave',()=>{isDragging=false;});
 
 // --- Nút nói & highlight ---
 let mediaRecorder, audioChunks = [];
 const pronounceBtn = document.getElementById("pronounce-btn");
+
 pronounceBtn.onclick = async () => {
     audioChunks = [];
+
+    // Lấy audio stream từ micro
     let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
     mediaRecorder.start();
-    pronounceBtn.disabled = true;
 
-    // Thêm class 'recording' khi đang ghi âm
+    // Disable nút & đổi trạng thái khi đang ghi âm
+    pronounceBtn.disabled = true;
     pronounceBtn.classList.add('recording');
 
+    // Thu thập dữ liệu audio
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
 
+    // Khi stop thì gửi audio lên server
     mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const formData = new FormData();
@@ -339,19 +250,19 @@ pronounceBtn.onclick = async () => {
             });
             const data = await res.json();
 
-            if(data.highlight){
-                // Cập nhật highlight lên từ gốc
+            if (data.highlight) {
+                // ✅ Cập nhật highlight lên từ gốc
                 flashcardWord.innerHTML = data.highlight;
 
                 // ❌ Tạm comment chỗ hiển thị transcript bên dưới
-                //highlightDiv.innerHTML = `<em>Transcript nhận diện:</em> ${data.transcript}`;
+                // highlightDiv.innerHTML = `<em>Transcript nhận diện:</em> ${data.transcript}`;
             } else {
                 // Nếu lỗi thì hiện từ gốc bình thường
                 flashcardWord.textContent = cards[currentIndex].word;
                 highlightDiv.textContent = data.result || "Lỗi khi chấm phát âm";
             }
 
-        } catch(err){
+        } catch (err) {
             console.error(err);
             flashcardWord.textContent = cards[currentIndex].word;
             highlightDiv.textContent = "Lỗi khi gọi API";
@@ -365,7 +276,6 @@ pronounceBtn.onclick = async () => {
     // Dừng sau 3s
     setTimeout(() => mediaRecorder.stop(), 3000);
 };
-
 </script>
 </body>
-
+</html>
