@@ -21,7 +21,7 @@ def login():
             else:
                 return redirect(url_for('main.index'))
         else:
-            return render_template('login.html', error='Invalid username or password.')
+            return render_template('login.html', error='Tài khoản không tồn tại.')
 
     return render_template('login.html')
 
@@ -36,14 +36,14 @@ def register():
             return render_template('register.html', error='All fields are required.')
 
         if password != confirm:
-            return render_template('register.html', error='Passwords do not match.')
+            return render_template('register.html', error='Mật khẩu không trùng khớp.')
 
         if not auth_utils.validate_username(username):
-            return render_template('register.html', error='Username is invalid.')
+            return render_template('register.html', error='Tên đăng nhập không hợp lệ.')
 
         existing_user = auth_model.get_user_by_username(username)
         if existing_user:
-            return render_template('register.html', error='Username already exists.')
+            return render_template('register.html', error='Tên đăng nhập đã tồn tại.')
 
         hashed_password = auth_utils.hash_password(password)
         success, error = auth_model.add_user(username, hashed_password)
