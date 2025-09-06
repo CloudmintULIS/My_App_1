@@ -130,6 +130,12 @@
           {% endif %}
         {% endwith %}
 
+        {% if error %}
+          <ul class="flash-messages">
+            <li>{{ error }}</li>
+          </ul>
+        {% endif %}
+
         <form method="post">
             <input type="text" name="username" placeholder="Tên đăng nhập" required>
             <input type="password" name="password" placeholder="Mật khẩu" required>
