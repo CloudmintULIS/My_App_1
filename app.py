@@ -7,6 +7,7 @@ from controllers.quiz_controller import quiz_bp
 from controllers.openAI_controller import openAI_bp
 from controllers.admin_controller import admin_bp
 from controllers.image_controller import image_bp
+from controllers.translate_controller import translate_bp
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -27,6 +28,7 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(main_bp)
 app.register_blueprint(image_bp)
 app.register_blueprint(word_bp)
+app.register_blueprint(translate_bp)
 
 @app.route("/ping")
 def ping():

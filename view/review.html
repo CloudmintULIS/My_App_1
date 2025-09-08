@@ -78,6 +78,25 @@
         70%{box-shadow:0 0 0 10px rgba(33,150,243,0);}
         100%{box-shadow:0 0 0 0 rgba(33,150,243,0);}
     }
+    /* Popup dịch nghĩa */
+    .translate-popup {
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 14px;
+        color: #333;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        z-index: 9999;
+        display: none;
+        max-width: 200px;
+        animation: fadeIn 0.2s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     @media(max-width:600px){
         body{padding:15px;}
         .notebook{width:100%; padding:15px; margin:0 auto;}
@@ -97,23 +116,23 @@
     <button class="nav-btn" onclick="prevCard()">&#8592;</button>
 
     <div class="notebook">
-        <div class="flashcard" id="flashcard">
-            <img id="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
-            <div class="word" id="flashcard-word">{{ cards[0].word }}</div>
+        <div class="flashcard">
+            <img class="flashcard-img" src="{{ cards[0].image_path }}" alt="Flashcard Image">
+            <div class="word">{{ cards[0].word }}</div>
 
             <!-- Phiên âm + Loa + Mic -->
             <div class="phonetic-container">
-                <span id="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
-                <button id="audio-btn" class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
-                <audio id="flashcard-audio" src="{{ cards[0].audio or '' }}"></audio>
-                <button id="pronounce-btn" class="micro-btn" title="Nhấn và nói">🎤</button>
+                <span class="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
+                <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
+                <audio class="flashcard-audio" src="{{ cards[0].audio or '' }}"></audio>
+                <button class="micro-btn pronounce-btn" title="Nhấn và nói">🎤</button>
             </div>
 
-            <div id="highlight-result" style="margin-top:5px; font-size:1.2em;"></div>
-            <div class="definition" id="flashcard-definition">
+            <div class="highlight-result"></div>
+            <div class="definition">
                 {% if cards[0].definition %}<strong>Def:</strong> {{ cards[0].definition }}{% endif %}
             </div>
-            <div class="example" id="flashcard-example">
+            <div class="example">
                 {% if cards[0].example %}<strong>Ex:</strong> {{ cards[0].example }}{% endif %}
             </div>
         </div>
@@ -132,17 +151,21 @@
 <a class="back-btn" href="{{ url_for('main.index') }}">🏠 Trang chính</a>
 {% endif %}
 
+<!-- popup -->
+<div class="translate-popup"></div>
+
 <script>
 const cards = {{ cards|tojson }};
 let currentIndex = 0;
 
-const flashcardDiv = document.getElementById("flashcard");
-const flashcardImg = document.getElementById("flashcard-img");
-const flashcardWord = document.getElementById("flashcard-word");
-const phoneticSpan = document.getElementById("flashcard-phonetic");
-const audioElem = document.getElementById("flashcard-audio");
-const audioBtn = document.getElementById("audio-btn");
-const highlightDiv = document.getElementById("highlight-result");
+const flashcardDiv = document.querySelector(".flashcard");
+const flashcardImg = document.querySelector(".flashcard-img");
+const flashcardWord = document.querySelector(".word");
+const phoneticSpan = document.querySelector(".flashcard-phonetic");
+const audioElem = document.querySelector(".flashcard-audio");
+const audioBtn = document.querySelector(".audio-btn");
+const highlightDiv = document.querySelector(".highlight-result");
+const popup = document.querySelector(".translate-popup");
 
 function showCard(index){
     flashcardDiv.style.opacity = 0;
@@ -162,9 +185,9 @@ function showCard(index){
         }
 
         highlightDiv.innerHTML = "";
-        document.getElementById("flashcard-definition").innerHTML =
+        document.querySelector(".definition").innerHTML =
             card.definition ? `<strong>Def:</strong> ${card.definition}` : "";
-        document.getElementById("flashcard-example").innerHTML =
+        document.querySelector(".example").innerHTML =
             card.example ? `<strong>Ex:</strong> ${card.example}` : "";
 
         flashcardDiv.style.opacity = 1;
@@ -197,29 +220,36 @@ function deleteCard(index){
     .catch(err=>console.error(err));
 }
 
-// Swipe
-let startX=0,isDragging=false;
-flashcardDiv.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;isDragging=true;});
-flashcardDiv.addEventListener('touchmove',e=>{
-    if(!isDragging)return;
-    const deltaX=e.touches[0].clientX-startX;
-    if(deltaX>80){prevCard();isDragging=false;}
-    else if(deltaX<-80){nextCard();isDragging=false;}
+// Swipe chỉ cho ảnh
+let startX = 0, isDragging = false;
+flashcardImg.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
 });
-flashcardDiv.addEventListener('touchend',()=>{isDragging=false;});
-flashcardDiv.addEventListener('mousedown',e=>{startX=e.clientX;isDragging=true;});
-flashcardDiv.addEventListener('mousemove',e=>{
-    if(!isDragging)return;
-    const deltaX=e.clientX-startX;
-    if(deltaX>80){prevCard();isDragging=false;}
-    else if(deltaX<-80){nextCard();isDragging=false;}
+flashcardImg.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const deltaX = e.touches[0].clientX - startX;
+    if (deltaX > 80) { prevCard(); isDragging = false; }
+    else if (deltaX < -80) { nextCard(); isDragging = false; }
 });
-flashcardDiv.addEventListener('mouseup',()=>{isDragging=false;});
-flashcardDiv.addEventListener('mouseleave',()=>{isDragging=false;});
+flashcardImg.addEventListener('touchend', () => { isDragging = false; });
+
+flashcardImg.addEventListener('mousedown', e => {
+    startX = e.clientX;
+    isDragging = true;
+});
+flashcardImg.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - startX;
+    if (deltaX > 80) { prevCard(); isDragging = false; }
+    else if (deltaX < -80) { nextCard(); isDragging = false; }
+});
+flashcardImg.addEventListener('mouseup', () => { isDragging = false; });
+flashcardImg.addEventListener('mouseleave', () => { isDragging = false; });
 
 // --- Nút nói & highlight ---
 let mediaRecorder, audioChunks = [];
-const pronounceBtn = document.getElementById("pronounce-btn");
+const pronounceBtn = document.querySelector(".pronounce-btn");
 
 pronounceBtn.onclick = async () => {
     audioChunks = [];
@@ -276,6 +306,39 @@ pronounceBtn.onclick = async () => {
     // Dừng sau 3s
     setTimeout(() => mediaRecorder.stop(), 3000);
 };
+
+// --- Popup dịch nghĩa ---
+document.addEventListener("mouseup", async () => {
+    let selected = window.getSelection().toString().trim();
+    if(selected){
+        try {
+            const res = await fetch("/api/translate", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ text: selected })
+            });
+            const data = await res.json();
+            if(data.translation){
+                const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+                popup.style.left = `${rect.left + window.scrollX}px`;
+                popup.style.top = `${rect.top + window.scrollY - 40}px`;
+                popup.innerHTML = `<strong>${selected}</strong> → ${data.translation}`;
+                popup.style.display = "block";
+            }
+        } catch(err){
+            console.error("Translate error:", err);
+        }
+    } else {
+        popup.style.display = "none";
+    }
+});
+
+// Ẩn popup khi click ra ngoài
+document.addEventListener("click", (e) => {
+    if(!popup.contains(e.target)){
+        popup.style.display = "none";
+    }
+});
 </script>
 </body>
 </html>
