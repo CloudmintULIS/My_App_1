@@ -158,6 +158,7 @@
 const cards = {{ cards|tojson }};
 let currentIndex = 0;
 
+// --- Biến DOM chính ---
 const flashcardDiv = document.querySelector(".flashcard");
 const flashcardImg = document.querySelector(".flashcard-img");
 const flashcardWord = document.querySelector(".word");
@@ -165,7 +166,7 @@ const phoneticSpan = document.querySelector(".flashcard-phonetic");
 const audioElem = document.querySelector(".flashcard-audio");
 const audioBtn = document.querySelector(".audio-btn");
 const highlightDiv = document.querySelector(".highlight-result");
-const popup = document.querySelector(".translate-popup");
+const popup = document.querySelector(".translate-popup"); // popup dịch nghĩa
 
 function showCard(index){
     flashcardDiv.style.opacity = 0;
@@ -307,8 +308,34 @@ pronounceBtn.onclick = async () => {
     setTimeout(() => mediaRecorder.stop(), 3000);
 };
 
-// --- Popup dịch nghĩa ---
+// --- Popup dịch nghĩa --- (cũ - mouseup)
 document.addEventListener("mouseup", async () => {
+    let selected = window.getSelection().toString().trim();
+    if(selected){
+        try {
+            const res = await fetch("/api/translate", {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ text: selected })
+            });
+            const data = await res.json();
+            if(data.translation){
+                const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
+                popup.style.left = `${rect.left + window.scrollX}px`;
+                popup.style.top = `${rect.top + window.scrollY - 40}px`;
+                popup.innerHTML = `<strong>${selected}</strong> → ${data.translation}`;
+                popup.style.display = "block";
+            }
+        } catch(err){
+            console.error("Translate error:", err);
+        }
+    } else {
+        popup.style.display = "none";
+    }
+});
+
+// --- Popup dịch nghĩa --- (mới - selectionchange, hỗ trợ mobile)
+document.addEventListener("selectionchange", async () => {
     let selected = window.getSelection().toString().trim();
     if(selected){
         try {
