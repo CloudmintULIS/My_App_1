@@ -3,8 +3,10 @@ const canvas = document.getElementById('canvas');
 const resultDiv = document.getElementById('result');
 const captureBtn = document.getElementById('capture-btn');
 const switchBtn = document.getElementById('switch-btn');
+const zoomSlider = document.getElementById('zoom-slider');
+const zoomContainer = document.querySelector('.zoom-container');
 
-let currentFacingMode = 'environment'; // 'user' cho camera trước
+let currentFacingMode = 'environment'; // mặc định camera sau
 let stream = null;
 
 // Hàm khởi động camera
@@ -14,27 +16,75 @@ async function startCamera(facingMode = 'environment') {
   }
 
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facingMode } },
-      audio: false
-    });
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = devices.filter(d => d.kind === 'videoinput');
+
+    if (videoDevices.length === 0) {
+      throw new Error("Không tìm thấy camera nào");
+    }
+
+    let constraints;
+
+    if (videoDevices.length === 1) {
+      // ✅ Laptop chỉ có 1 camera → chọn đúng deviceId
+      constraints = {
+        video: { deviceId: { exact: videoDevices[0].deviceId } },
+        audio: false
+      };
+    } else {
+      // ✅ Mobile có nhiều camera → dùng facingMode
+      constraints = {
+        video: { facingMode: { ideal: facingMode } },
+        audio: false
+      };
+    }
+
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
-  } catch (err) {
+
+    // --- Zoom chỉ khi mobile có nhiều camera ---
+    const [track] = stream.getVideoTracks();
+    const capabilities = track.getCapabilities();
+
+    if (videoDevices.length > 1 && 'zoom' in capabilities) {
+      zoomContainer.style.display = 'block';
+      zoomSlider.min = capabilities.zoom.min;
+      zoomSlider.max = capabilities.zoom.max;
+      zoomSlider.step = capabilities.zoom.step || 0.1;
+      zoomSlider.value = capabilities.zoom.min;
+
+      zoomSlider.oninput = () => {
+        track.applyConstraints({ advanced: [{ zoom: zoomSlider.value }] });
+      };
+    } else {
+      zoomContainer.style.display = 'none';
+    }
+
+    } catch (err) {
     console.error('Camera error:', err);
-    resultDiv.innerText = '❌ Không thể truy cập camera: ' + err.message;
+
+    if (err.name === "NotReadableError") {
+      resultDiv.innerText = "❌ Camera đang bận. Hãy tắt ứng dụng khác (Zoom, Camera app, OBS...) rồi thử lại.";
+    } else if (err.name === "NotAllowedError") {
+      resultDiv.innerText = "❌ Truy cập camera bị chặn. Hãy cấp quyền trong trình duyệt.";
+    } else if (err.name === "NotFoundError") {
+      resultDiv.innerText = "❌ Không tìm thấy camera nào.";
+    } else {
+      resultDiv.innerText = "❌ Không thể truy cập camera: " + err.message;
+    }
   }
 }
 
-// Bắt đầu camera với camera sau (mặc định)
+// Bắt đầu camera mặc định
 startCamera(currentFacingMode);
 
-// Chuyển camera khi nhấn nút
+// Nút chuyển camera
 switchBtn.addEventListener('click', () => {
   currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
   startCamera(currentFacingMode);
 });
 
-// Chụp ảnh và gửi lên server
+// Nút chụp ảnh
 captureBtn.addEventListener('click', () => {
   if (!video.videoWidth || !video.videoHeight) {
     resultDiv.innerText = '❌ Không thể chụp ảnh: camera chưa sẵn sàng';
@@ -62,14 +112,9 @@ captureBtn.addEventListener('click', () => {
         const wordInfo = data.word_info || {};
 
         let html = `✅ <b>${label}</b>`;
-//        if (wordInfo.phonetic) html += ` (${wordInfo.phonetic})`;
-//        if (wordInfo.definition) html += `<br>📖 ${wordInfo.definition}`;
-//        if (wordInfo.example) html += `<br>💡 <i>${wordInfo.example}</i>`;
-//        if (wordInfo.audio) html += `<br><audio controls src="${wordInfo.audio}"></audio>`;
-
         resultDiv.innerHTML = html;
 
-        // TTS
+        // TTS đọc từ
         if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
           const utterance = new SpeechSynthesisUtterance(label);
           utterance.lang = 'en-US';

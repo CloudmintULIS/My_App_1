@@ -1,27 +1,31 @@
-<html>
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <title>🌸 AI Camera - English With Me 🌸</title>
   <meta charset="UTF-8">
+  <title>🌸 AI Camera - English With Me 🌸</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <!-- Thanh người dùng -->
   <div class="user-bar">
-  👤 Welcome, <strong>{{ username }}</strong>!
+    👤 Welcome, <strong>{{ username }}</strong>!
     {% if role == 'admin' %}
       <a href="{{ url_for('admin.dashboard') }}" class="admin-btn">⚙️ Admin</a>
     {% endif %}
-  <a href="{{ url_for('auth.logout') }}" class="logout-btn">🚪 Logout</a>
-
-
-</div>
+    <a href="{{ url_for('auth.logout') }}" class="logout-btn">🚪 Logout</a>
+  </div>
 
   <h2 class="title">📷 English with me 💖</h2>
 
   <!-- Khung video -->
   <div class="video-container">
     <video id="webcam" autoplay muted playsinline></video>
+  </div>
+
+  <!-- Zoom -->
+  <div class="zoom-container" style="display:none;">
+    🔍 Zoom: <input type="range" id="zoom-slider">
   </div>
 
   <!-- Kết quả nhận diện -->

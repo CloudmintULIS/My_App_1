@@ -68,6 +68,19 @@ video {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
+/* Zoom slider */
+.zoom-container {
+  margin: 10px 0;
+  font-size: 0.95em;
+  color: #444;
+  display: none; /* ẩn mặc định, chỉ hiện nếu hỗ trợ */
+  text-align: center;
+}
+
+#zoom-slider {
+  width: 180px;
+}
+
 /* Kết quả nhận diện */
 .result-box {
   margin: 15px auto 10px;
@@ -145,7 +158,7 @@ video {
 
   /* Camera full màn hơn */
   .video-container {
-    height: 70vh; /* Chiếm 70% chiều cao màn hình */
+    height: 70vh;
     margin-top: 5px;
   }
 
@@ -154,8 +167,8 @@ video {
     height: 100%;
     max-width: none;
     max-height: none;
-    aspect-ratio: auto; /* Bỏ tỉ lệ cố định */
-    object-fit: cover; /* Có thể đổi thành contain nếu muốn thấy toàn bộ */
+    aspect-ratio: auto;
+    object-fit: cover;
     border-radius: 8px;
     border: 2px solid #ffb6c1;
   }
