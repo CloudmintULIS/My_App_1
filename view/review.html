@@ -308,51 +308,25 @@ pronounceBtn.onclick = async () => {
     setTimeout(() => mediaRecorder.stop(), 3000);
 };
 
-// --- Popup dịch nghĩa --- (cũ - mouseup)
-document.addEventListener("mouseup", async () => {
-    let selected = window.getSelection().toString().trim();
-    if(selected){
-        try {
-            const res = await fetch("/api/translate", {
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({ text: selected })
-            });
-            const data = await res.json();
-            if(data.translation){
-                const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
-                popup.style.left = `${rect.left + window.scrollX}px`;
-                popup.style.top = `${rect.top + window.scrollY - 40}px`;
-                popup.innerHTML = `<strong>${selected}</strong> → ${data.translation}`;
-                popup.style.display = "block";
-            }
-        } catch(err){
-            console.error("Translate error:", err);
-        }
-    } else {
-        popup.style.display = "none";
-    }
-});
-
-// --- Popup dịch nghĩa --- (mới - selectionchange, hỗ trợ mobile)
+// --- Popup dịch nghĩa --- (dùng selectionchange cho cả PC + mobile)
 document.addEventListener("selectionchange", async () => {
     let selected = window.getSelection().toString().trim();
-    if(selected){
+    if (selected) {
         try {
             const res = await fetch("/api/translate", {
                 method: "POST",
-                headers: {"Content-Type":"application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: selected })
             });
             const data = await res.json();
-            if(data.translation){
+            if (data.translation) {
                 const rect = window.getSelection().getRangeAt(0).getBoundingClientRect();
                 popup.style.left = `${rect.left + window.scrollX}px`;
-                popup.style.top = `${rect.top + window.scrollY - 40}px`;
+                popup.style.top = `${rect.bottom + window.scrollY + 8}px`; // popup dưới menu copy
                 popup.innerHTML = `<strong>${selected}</strong> → ${data.translation}`;
                 popup.style.display = "block";
             }
-        } catch(err){
+        } catch (err) {
             console.error("Translate error:", err);
         }
     } else {
@@ -362,7 +336,7 @@ document.addEventListener("selectionchange", async () => {
 
 // Ẩn popup khi click ra ngoài
 document.addEventListener("click", (e) => {
-    if(!popup.contains(e.target)){
+    if (!popup.contains(e.target)) {
         popup.style.display = "none";
     }
 });
