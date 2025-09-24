@@ -140,6 +140,93 @@ def delete_vocab(vocab_id):
     except Exception as e:
         return False, str(e)
 
+# ===================== WORD INFO =====================
+
+def get_all_word_info():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, word, phonetic, audio, definition, example
+        FROM word_info
+        ORDER BY id
+    """)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "id": r[0],
+            "word": r[1],
+            "phonetic": r[2],
+            "audio": r[3],
+            "definition": r[4],
+            "example": r[5]
+        }
+        for r in rows
+    ]
+
+
+def get_word_info_by_id(word_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, word, phonetic, audio, definition, example
+        FROM word_info WHERE id=%s
+    """, (word_id,))
+    row = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return {
+        "id": row[0], "word": row[1], "phonetic": row[2],
+        "audio": row[3], "definition": row[4], "example": row[5]
+    } if row else None
+
+
+def add_word_info(word, phonetic, audio, definition, example):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO word_info (word, phonetic, audio, definition, example)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (word, phonetic, audio, definition, example))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+
+def update_word_info(word_id, word, phonetic, audio, definition, example):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE word_info
+            SET word=%s, phonetic=%s, audio=%s, definition=%s, example=%s
+            WHERE id=%s
+        """, (word, phonetic, audio, definition, example, word_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+
+def delete_word_info(word_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM word_info WHERE id=%s", (word_id,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return True, None
+    except Exception as e:
+        return False, str(e)
 
 # ===================== STATISTICS =====================
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Chỉnh sửa Word Info</title>
+</head>
+<body>
+  <h1>✏ Sửa Word Info</h1>
+  <form method="POST">
+    <input type="text" name="word" value="{{ word.word }}" required>
+    <input type="text" name="phonetic" value="{{ word.phonetic }}">
+    <input type="text" name="audio" value="{{ word.audio }}">
+    <input type="text" name="definition" value="{{ word.definition }}">
+    <input type="text" name="example" value="{{ word.example }}">
+    <button type="submit">💾 Lưu</button>
+  </form>
+  <a href="{{ url_for('admin.dashboard') }}">⬅ Quay lại</a>
+</body>
+</html>

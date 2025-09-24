@@ -24,12 +24,14 @@ def dashboard():
     users = admin_model.get_all_users()
     vocab_cards = admin_model.get_all_vocab_cards()
     stats = admin_model.get_user_stats()
+    word_info = admin_model.get_all_word_info()
 
     return render_template(
         "admin.html",
         users=users,
         vocab_cards=vocab_cards,
         user_stats=stats,
+        word_info=word_info
     )
 
 
@@ -108,3 +110,45 @@ def edit_vocab(vocab_id):
 
     vocab = admin_model.get_vocab_by_id(vocab_id)
     return render_template("edit_vocab.html", vocab=vocab)
+
+# ===================== Word Info Management =====================
+
+@admin_bp.route("/add_word_info", methods=["POST"])
+def add_word_info():
+    word = request.form["word"]
+    phonetic = request.form.get("phonetic")
+    audio = request.form.get("audio")
+    definition = request.form.get("definition")
+    example = request.form.get("example")
+
+    success, error = admin_model.add_word_info(word, phonetic, audio, definition, example)
+    flash("Thêm word_info thành công!" if success else f"Lỗi: {error}")
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/delete_word_info/<int:word_id>")
+def delete_word_info(word_id):
+    success, error = admin_model.delete_word_info(word_id)
+    flash("Xóa word_info thành công!" if success else f"Lỗi: {error}")
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/edit_word_info/<int:word_id>", methods=["GET", "POST"])
+def edit_word_info(word_id):
+    if request.method == "POST":
+        word = request.form["word"]
+        phonetic = request.form.get("phonetic")
+        audio = request.form.get("audio")
+        definition = request.form.get("definition")
+        example = request.form.get("example")
+
+        success, error = admin_model.update_word_info(word_id, word, phonetic, audio, definition, example)
+        if success:
+            flash("Cập nhật word_info thành công!")
+            return redirect(url_for("admin.dashboard"))
+        else:
+            flash(f"Lỗi: {error}")
+            return redirect(url_for("admin.edit_word_info", word_id=word_id))
+
+    word_info = admin_model.get_word_info_by_id(word_id)
+    return render_template("edit_word_info.html", word=word_info)

@@ -295,7 +295,53 @@
     <div class="show-all-container">
       <button id="vocabShowAll">👀 Xem tất cả</button>
     </div>
+
+    <!-- Word Info section -->
+    <h2 id="word_info">📖 Dữ liệu Word Info</h2>
+    <form method="POST" action="{{ url_for('admin.add_word_info') }}">
+      <input type="text" name="word" placeholder="Word" required>
+      <input type="text" name="phonetic" placeholder="Phonetic">
+      <input type="text" name="audio" placeholder="Audio URL">
+      <input type="text" name="definition" placeholder="Definition">
+      <input type="text" name="example" placeholder="Example">
+      <button type="submit">➕ Thêm Word</button>
+    </form>
+
+      <table id="wordInfoTable">
+    <tr>
+      <th>STT</th><th>ID</th><th>Word</th><th>Phonetic</th>
+      <th>Audio</th><th>Definition</th><th>Example</th><th>Hành động</th>
+    </tr>
+    {% for w in word_info %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ w.id }}</td>
+      <td>{{ w.word }}</td>
+      <td>{{ w.phonetic }}</td>
+      <td>
+        {% if w.audio %}
+          <a href="{{ w.audio }}" target="_blank">🔊 Nghe</a>
+        {% else %}
+          <span style="color: gray;">--</span>
+        {% endif %}
+      </td>
+      <td>{{ w.definition }}</td>
+      <td>{{ w.example }}</td>
+      <td>
+        <a href="{{ url_for('admin.edit_word_info', word_id=w.id) }}" class="edit-btn">✏ Sửa</a> |
+        <a href="{{ url_for('admin.delete_word_info', word_id=w.id) }}" class="delete-btn"
+           onclick="return confirm('Bạn có chắc muốn xóa từ này?');">🗑 Xóa</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+    <div id="wordInfoPagination" class="pagination"></div>
+    <div class="show-all-container">
+      <button id="wordInfoShowAll">👀 Xem tất cả</button>
+    </div>
+
   </div>
+
 
   <!-- JS phân trang -->
   <script>
@@ -380,6 +426,8 @@
   // Gọi phân trang cho cả 2 bảng
   paginateTable("usersTable", "usersPagination", "usersShowAll", 5);
   paginateTable("vocabTable", "vocabPagination", "vocabShowAll", 5);
+  paginateTable("wordInfoTable", "wordInfoPagination", "wordInfoShowAll", 5);
+
   </script>
 
 </body>
