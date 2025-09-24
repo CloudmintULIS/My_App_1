@@ -176,48 +176,89 @@
         {% endif %}
     </div>
 
-    <script>
-        let correctAnswer = "{{ correct_word }}";
-
-        function checkAnswer(button, selected) {
-            const result = document.getElementById("result");
-            document.querySelectorAll(".choices button").forEach(btn => btn.disabled = true);
-
-            if (selected === correctAnswer) {
-                result.textContent = "✅ Chính xác!";
-                result.style.color = "green";
-                button.style.backgroundColor = "green";
-            } else {
-                result.textContent = "❌ Sai rồi!";
-                result.style.color = "red";
-                button.style.backgroundColor = "red";
-            }
+<script>
+    // === Tạo Audio objects và cấu hình fade in/out ===
+    class SoundPlayer {
+        constructor(url, volume = 1.0) {
+            this.audio = new Audio(url);
+            this.audio.volume = 0;
+            this.targetVolume = volume;
         }
 
-        async function loadNewQuiz() {
-            const response = await fetch("/quiz/api/new_quiz");
-            const data = await response.json();
-
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
-
-            document.querySelector("img").src = data.image_url;
-
-            const choicesDiv = document.querySelector(".choices");
-            choicesDiv.innerHTML = "";
-
-            data.choices.forEach(choice => {
-                const btn = document.createElement("button");
-                btn.textContent = choice;
-                btn.onclick = () => checkAnswer(btn, choice);
-                choicesDiv.appendChild(btn);
-            });
-
-            correctAnswer = data.correct_word;
-            document.getElementById("result").textContent = "";
+        playFade(duration = 300) { // duration tính bằng ms
+            this.audio.currentTime = 0;
+            this.audio.play();
+            let step = 50;
+            let increment = this.targetVolume / (duration / step);
+            const fadeInterval = setInterval(() => {
+                if (this.audio.volume + increment < this.targetVolume) {
+                    this.audio.volume += increment;
+                } else {
+                    this.audio.volume = this.targetVolume;
+                    clearInterval(fadeInterval);
+                }
+            }, step);
         }
-    </script>
+
+        stop() {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+            this.audio.volume = 0;
+        }
+    }
+
+    // === Khai báo âm thanh đúng/sai ===
+    const correctSound = new SoundPlayer("{{ url_for('static', filename='sounds/correct.mp3') }}", 0.7);
+    const wrongSound = new SoundPlayer("{{ url_for('static', filename='sounds/wrong.mp3') }}", 0.7);
+
+    let correctAnswer = "{{ correct_word }}";
+
+    function checkAnswer(button, selected) {
+        const result = document.getElementById("result");
+        document.querySelectorAll(".choices button").forEach(btn => btn.disabled = true);
+
+        // Dừng nhạc cũ nếu đang phát
+        correctSound.stop();
+        wrongSound.stop();
+
+        if (selected === correctAnswer) {
+            result.textContent = "✅ Chính xác!";
+            result.style.color = "green";
+            button.style.backgroundColor = "green";
+            correctSound.playFade();  // Phát nhạc đúng
+        } else {
+            result.textContent = "❌ Sai rồi!";
+            result.style.color = "red";
+            button.style.backgroundColor = "red";
+            wrongSound.playFade();    // Phát nhạc sai
+        }
+    }
+
+    async function loadNewQuiz() {
+        const response = await fetch("/quiz/api/new_quiz");
+        const data = await response.json();
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Cập nhật ảnh
+        document.querySelector("img").src = data.image_url;
+
+        // Xóa và tạo lại nút đáp án
+        const choicesDiv = document.querySelector(".choices");
+        choicesDiv.innerHTML = "";
+        data.choices.forEach(choice => {
+            const btn = document.createElement("button");
+            btn.textContent = choice;
+            btn.onclick = () => checkAnswer(btn, choice);
+            choicesDiv.appendChild(btn);
+        });
+
+        correctAnswer = data.correct_word;
+        document.getElementById("result").textContent = "";
+    }
+</script>
 </body>
 </html>
