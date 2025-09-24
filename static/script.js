@@ -1,15 +1,28 @@
+// --- Lấy phần tử ---
 const video = document.getElementById('webcam');
 const canvas = document.getElementById('canvas');
 const resultDiv = document.getElementById('result');
+const previewImg = document.getElementById('preview-img');
 const captureBtn = document.getElementById('capture-btn');
 const switchBtn = document.getElementById('switch-btn');
 const zoomSlider = document.getElementById('zoom-slider');
 const zoomContainer = document.querySelector('.zoom-container');
+const uploadInput = document.getElementById('upload-input');
 
 let currentFacingMode = 'environment'; // mặc định camera sau
 let stream = null;
 
-// Hàm khởi động camera
+// --- Hàm đọc to nhãn ---
+function speakLabel(label) {
+  if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+    const utterance = new SpeechSynthesisUtterance(label);
+    utterance.lang = 'en-US';
+    speechSynthesis.cancel(); // hủy giọng đọc cũ nếu có
+    speechSynthesis.speak(utterance);
+  }
+}
+
+// --- Khởi động camera ---
 async function startCamera(facingMode = 'environment') {
   if (stream) {
     stream.getTracks().forEach(track => track.stop());
@@ -24,25 +37,16 @@ async function startCamera(facingMode = 'environment') {
     }
 
     let constraints;
-
     if (videoDevices.length === 1) {
-      // ✅ Laptop chỉ có 1 camera → chọn đúng deviceId
-      constraints = {
-        video: { deviceId: { exact: videoDevices[0].deviceId } },
-        audio: false
-      };
+      constraints = { video: { deviceId: { exact: videoDevices[0].deviceId } }, audio: false };
     } else {
-      // ✅ Mobile có nhiều camera → dùng facingMode
-      constraints = {
-        video: { facingMode: { ideal: facingMode } },
-        audio: false
-      };
+      constraints = { video: { facingMode: { ideal: facingMode } }, audio: false };
     }
 
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
 
-    // --- Zoom chỉ khi mobile có nhiều camera ---
+    // --- Zoom nếu hỗ trợ ---
     const [track] = stream.getVideoTracks();
     const capabilities = track.getCapabilities();
 
@@ -60,41 +64,35 @@ async function startCamera(facingMode = 'environment') {
       zoomContainer.style.display = 'none';
     }
 
-    } catch (err) {
+  } catch (err) {
     console.error('Camera error:', err);
-
-    if (err.name === "NotReadableError") {
-      resultDiv.innerText = "❌ Camera đang bận. Hãy tắt ứng dụng khác (Zoom, Camera app, OBS...) rồi thử lại.";
-    } else if (err.name === "NotAllowedError") {
-      resultDiv.innerText = "❌ Truy cập camera bị chặn. Hãy cấp quyền trong trình duyệt.";
-    } else if (err.name === "NotFoundError") {
-      resultDiv.innerText = "❌ Không tìm thấy camera nào.";
-    } else {
-      resultDiv.innerText = "❌ Không thể truy cập camera: " + err.message;
-    }
+    resultDiv.innerText = "❌ Lỗi camera: " + err.message;
   }
 }
 
-// Bắt đầu camera mặc định
+// --- Bắt đầu camera mặc định ---
 startCamera(currentFacingMode);
 
-// Nút chuyển camera
+// --- Chuyển camera ---
 switchBtn.addEventListener('click', () => {
   currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
   startCamera(currentFacingMode);
 });
 
-// Nút chụp ảnh
+// --- Chụp ảnh ---
 captureBtn.addEventListener('click', () => {
   if (!video.videoWidth || !video.videoHeight) {
-    resultDiv.innerText = '❌ Không thể chụp ảnh: camera chưa sẵn sàng';
+    resultDiv.innerText = '❌ Camera chưa sẵn sàng';
     return;
   }
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  // --- Resize canvas để gửi nhẹ hơn ---
+  const MAX_WIDTH = 800;
+  const scale = Math.min(MAX_WIDTH / video.videoWidth, 1);
+  canvas.width = video.videoWidth * scale;
+  canvas.height = video.videoHeight * scale;
   const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   canvas.toBlob(blob => {
     const formData = new FormData();
@@ -102,28 +100,47 @@ captureBtn.addEventListener('click', () => {
 
     resultDiv.innerText = '⏳ Đang phân tích...';
 
-    fetch('/analyze', {
-      method: 'POST',
-      body: formData
-    })
+    // Hiển thị preview nhỏ góc video
+    previewImg.src = URL.createObjectURL(blob);
+    previewImg.style.display = 'block';
+
+    fetch('/analyze', { method: 'POST', body: formData })
       .then(res => res.json())
       .then(data => {
         const label = data.label;
-        const wordInfo = data.word_info || {};
-
-        let html = `✅ <b>${label}</b>`;
-        resultDiv.innerHTML = html;
-
-        // TTS đọc từ
-        if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
-          const utterance = new SpeechSynthesisUtterance(label);
-          utterance.lang = 'en-US';
-          speechSynthesis.speak(utterance);
-        }
+        resultDiv.innerHTML = `✅ <b>${label}</b>`;
+        speakLabel(label);
       })
       .catch(err => {
         console.error('Fetch error:', err);
         resultDiv.innerText = '❌ Lỗi: ' + err.message;
       });
   }, 'image/jpeg');
+});
+
+// --- Upload ảnh ---
+uploadInput.addEventListener('change', () => {
+  if (uploadInput.files.length === 0) return;
+
+  const file = uploadInput.files[0];
+  const formData = new FormData();
+  formData.append('image', file, file.name);
+
+  resultDiv.innerText = '⏳ Đang phân tích...';
+
+  // Hiển thị preview nhỏ góc video
+  previewImg.src = URL.createObjectURL(file);
+  previewImg.style.display = 'block';
+
+  fetch('/analyze', { method: 'POST', body: formData })
+    .then(res => res.json())
+    .then(data => {
+      const label = data.label;
+      resultDiv.innerHTML = `✅ <b>${label}</b>`;
+      speakLabel(label);
+    })
+    .catch(err => {
+      console.error('Upload error:', err);
+      resultDiv.innerText = '❌ Lỗi: ' + err.message;
+    });
 });

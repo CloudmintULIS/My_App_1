@@ -18,9 +18,18 @@
 
   <h2 class="title">📷 English with me 💖</h2>
 
-  <!-- Khung video -->
-  <div class="video-container">
-    <video id="webcam" autoplay muted playsinline></video>
+  <!-- Camera + preview + kết quả -->
+  <div class="camera-wrapper">
+    <div class="video-container">
+      <video id="webcam" autoplay muted playsinline></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+
+      <!-- Preview ảnh nhỏ góc video -->
+      <img id="preview-img" class="preview-img" alt="Preview">
+    </div>
+
+    <!-- Kết quả hiển thị **dưới video** -->
+    <div id="result" class="result-box">Hãy chụp ảnh hoặc chọn ảnh 📸</div>
   </div>
 
   <!-- Zoom -->
@@ -28,17 +37,15 @@
     🔍 Zoom: <input type="range" id="zoom-slider">
   </div>
 
-  <!-- Kết quả nhận diện -->
-  <div id="result" class="result-box">Hãy chụp ảnh để nhận diện 📸</div>
-
   <!-- Nút chức năng -->
   <div class="button-container">
     <button id="switch-btn" class="btn btn-switch">🔄 Chuyển camera</button>
     <button id="capture-btn" class="btn btn-capture">📸 Chụp & Nhận diện</button>
+    <label for="upload-input" class="btn btn-upload">🖼️ Chọn ảnh</label>
+    <input type="file" id="upload-input" accept="image/*" style="display:none;">
     <a href="{{ url_for('review.review') }}" class="btn btn-review">📚 Ôn tập</a>
   </div>
 
-  <canvas id="canvas" style="display:none;"></canvas>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

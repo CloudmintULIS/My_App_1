@@ -1,3 +1,4 @@
+/* === Body & Font === */
 body {
   font-family: 'Comic Sans MS', cursive, sans-serif;
   background: linear-gradient(135deg, #ffe4f1, #d6eaff);
@@ -10,7 +11,7 @@ body {
   align-items: center;
 }
 
-/* Thanh user bar */
+/* === Thanh user bar === */
 .user-bar {
   position: absolute;
   top: 10px;
@@ -39,7 +40,7 @@ body {
   background: #ff4d77;
 }
 
-/* Tiêu đề */
+/* === Tiêu đề === */
 .title {
   margin-top: 60px;
   font-size: 1.7em;
@@ -48,18 +49,24 @@ body {
   text-align: center;
 }
 
-/* Video */
+/* === Camera wrapper & video container === */
+.camera-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .video-container {
+  position: relative; /* để preview absolute */
   display: flex;
   justify-content: center;
-  margin-top: 12px;
-  width: 100%;
-  height: auto;
+  width: 90%;
+  max-width: 500px;
 }
 
 video {
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
@@ -68,12 +75,46 @@ video {
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Zoom slider */
+/* Preview ảnh nhỏ góc video */
+#preview-img {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid #ffb6c1;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 5;
+}
+
+/* === Kết quả hiển thị dưới video === */
+.result-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #fff0f5;
+  border-radius: 12px;
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #ff4d88;
+  text-align: center;
+  border: 2px dashed #ffb6c1;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 100%;
+  word-break: break-word;
+}
+
+/* === Zoom slider === */
 .zoom-container {
   margin: 10px 0;
   font-size: 0.95em;
   color: #444;
-  display: none; /* ẩn mặc định, chỉ hiện nếu hỗ trợ */
+  display: none;
   text-align: center;
 }
 
@@ -81,22 +122,7 @@ video {
   width: 180px;
 }
 
-/* Kết quả nhận diện */
-.result-box {
-  margin: 15px auto 10px;
-  padding: 12px 15px;
-  background: #fff0f5;
-  border-radius: 12px;
-  max-width: 500px;
-  font-size: 1.4em;
-  font-weight: bold;
-  color: #ff4d88;
-  text-align: center;
-  border: 2px dashed #ffb6c1;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-/* Nút bấm */
+/* === Nút bấm === */
 .button-container {
   margin: 14px 0;
   display: flex;
@@ -125,6 +151,10 @@ video {
   background-color: #ffb6c1;
 }
 
+.btn-upload {
+  background-color: #ffb6c1;
+}
+
 .btn-review {
   background-color: #b19cd9;
 }
@@ -134,7 +164,7 @@ video {
   opacity: 0.9;
 }
 
-/* Mobile tối ưu */
+/* === Mobile tối ưu === */
 @media (max-width: 600px) {
   body {
     padding-bottom: 10px;
@@ -151,30 +181,23 @@ video {
     min-width: 90px;
   }
 
-  .result-box {
-    font-size: 1.2em;
-    padding: 10px 12px;
-  }
-
-  /* Camera full màn hơn */
-  .video-container {
-    height: 70vh;
-    margin-top: 5px;
-  }
-
   video {
     width: 100%;
     height: 100%;
     max-width: none;
-    max-height: none;
     aspect-ratio: auto;
     object-fit: cover;
     border-radius: 8px;
     border: 2px solid #ffb6c1;
   }
 
-  .user-bar {
-    font-size: 0.95em;
+  #preview-img {
+    width: 70px;
+    height: 70px;
+  }
+
+  .result-box {
+    font-size: 1.2em;
     padding: 6px 10px;
   }
 }
