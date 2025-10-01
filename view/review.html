@@ -123,8 +123,13 @@
             <!-- Phiên âm + Loa + Mic -->
             <div class="phonetic-container">
                 <span class="flashcard-phonetic">{{ cards[0].phonetic or '' }}</span>
-                <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
-                <audio class="flashcard-audio" src="{{ cards[0].audio or '' }}"></audio>
+                {% if cards[0].audio %}
+                    <button class="audio-btn" onclick="playAudio()" title="Nghe phát âm">🔊</button>
+                    <audio class="flashcard-audio" src="{{ cards[0].audio }}"></audio>
+                {% else %}
+                    <button class="audio-btn" style="display:none;" onclick="playAudio()" title="Nghe phát âm">🔊</button>
+                    <audio class="flashcard-audio"></audio>
+                {% endif %}
                 <button class="micro-btn pronounce-btn" title="Nhấn và nói">🎤</button>
             </div>
 
@@ -286,7 +291,7 @@ pronounceBtn.onclick = async () => {
                 flashcardWord.innerHTML = data.highlight;
 
                 // ❌ Tạm comment chỗ hiển thị transcript bên dưới
-                // highlightDiv.innerHTML = `<em>Transcript nhận diện:</em> ${data.transcript}`;
+                //highlightDiv.innerHTML = `<em>Transcript nhận diện:</em> ${data.transcript}`;
             } else {
                 // Nếu lỗi thì hiện từ gốc bình thường
                 flashcardWord.textContent = cards[currentIndex].word;

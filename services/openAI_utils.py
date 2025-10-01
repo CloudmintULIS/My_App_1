@@ -23,12 +23,12 @@ def identify_image(image: Image.Image) -> str:
                         "type": "text",
                         "text": (
                             "Identify the main object in this photo.\n"
-                            "Reply with exactly ONE word only.\n"
+                            "Reply with exactly ONE word only, in singular form (e.g., apple not apples, pear not pears).\n"
                             "- If it is a real human, reply: human\n"
                             "- If it is an anime/manga style drawing, reply: anime\n"
                             "- If it is a western cartoon style drawing, reply: cartoon\n"
                             "- If it is a digital art or generic illustration, reply: illustration\n"
-                            "- Otherwise, reply with the object name (e.g., apple, car, dog)\n"
+                            "- Otherwise, reply with the singular object name (e.g., apple, car, dog, pear)\n"
                             "- If the image is blank or just noise, reply: unidentified\n"
                             "Do not explain. Only output one word."
                         )
