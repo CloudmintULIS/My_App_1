@@ -231,6 +231,14 @@
             result.style.color = "red";
             button.style.backgroundColor = "red";
             wrongSound.playFade();    // Phát nhạc sai
+
+             // 🔹 Tô thêm nút có đáp án đúng thành xanh
+        const buttons = document.querySelectorAll(".choices button");
+        buttons.forEach(btn => {
+                if (btn.textContent === correctAnswer) {
+                    btn.style.backgroundColor = "green";
+                }
+            });
         }
     }
 
